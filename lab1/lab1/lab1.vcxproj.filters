@@ -47,6 +47,9 @@
     <ClInclude Include="khrplatform.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Drone.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="lab1.rc">
