@@ -4,21 +4,25 @@
 #include <random>
 #include<iostream>
 #include"Camera.h"
+#include"MarkSphere.h"
 using namespace std;
 //模型路径
 string filePath = "F:\\CG\\lab1\\data\\drone\\Drone.obj";
 Drone drone;
 BaseFloor baseFloor(100, 100);
 Camera camera;
+MarkSphere startSphere;
+MarkSphere stopSphere;
 //实现移动鼠标观察模型所需变量
 static float c = 3.1415926 / 180.0f;
 static float r = 60.0f;
 static int degree = 90;
 static int oldPosY = -1;
 static int oldPosX = -1;
-GLfloat ambient[] = { 0.3f, 0.3f, 0.3f, 1.0f };  // 环境强度
-GLfloat diffuse[] = { 1.0f, 1.0f, 1.0f, 1.0f };  // 散射强度
-GLfloat specular[] = { 1.0f, 1.0f, 1.0f, 1.0f }; // 镜面强度
+//drone飞行的目的地
+GLdouble targetX=30;
+GLdouble targetY=30;
+GLdouble targetZ=30;
 
 //安置光源
 void setLightRes() {
@@ -39,6 +43,7 @@ void init() {
 	glEnable(GL_LIGHT1);
 	glEnable(GL_DEPTH_TEST);	
 	baseFloor.create();
+	
 }
 
 void display()
@@ -52,6 +57,8 @@ void display()
 		baseFloor.centerX(), 0.0, baseFloor.centerZ(),   //焦点坐标
 		0.0, 1.0, 0.0);   //摄像机机顶方向矢量
 	baseFloor.draw();
+	startSphere.draw();
+	stopSphere.draw();
 	drone.draw();
 	//glPopMatrix();
 	glutSwapBuffers();
@@ -63,7 +70,7 @@ void display()
 void TimeFunction(int value)
 {	
 	drone.flyToPos(10.0, 10.0, 20.0, 0);
-	glutTimerFunc(50, TimeFunction, 1);
+	glutTimerFunc(20, TimeFunction, 1);
 }
 
 void reshape(int width, int height)
@@ -108,6 +115,10 @@ int main(int argc, char* argv[])
 {
 	drone.load(filePath);
 	drone.setPos(0, 0, 10);
+	startSphere.setPos(drone.getPosX(), drone.getPosY(), drone.getPosZ());
+	startSphere.setRadius(1.0);
+	stopSphere.setPos(targetX, targetY, targetZ);
+	stopSphere.setRadius(1.0);
 	glutInit(&argc, argv);
 	init();
 	glutDisplayFunc(display);
@@ -115,7 +126,7 @@ int main(int argc, char* argv[])
 	glutMouseFunc(mouseMove); 
 	glutMotionFunc(changeViewPoint);
 	glutIdleFunc(myIdle);
-	glutTimerFunc(50 , TimeFunction, 1);
+	glutTimerFunc(20 , TimeFunction, 1);
 	glutMainLoop();
 	return 0;
 }

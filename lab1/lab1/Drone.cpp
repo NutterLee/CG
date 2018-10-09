@@ -1,7 +1,8 @@
 #include"Drone.h"
 
 std::default_random_engine generator;
-std::uniform_int_distribution<int> dis(-50, 50);
+std::uniform_int_distribution<int> dis(-2, 2);
+std::uniform_int_distribution<int> dis2(1, 10);
 
 void Drone::load(string path)
 {
@@ -60,10 +61,27 @@ void Drone::flyToPos(GLdouble tarX, GLdouble tarY, GLdouble tarZ, int mode)
 	if (leftZ == 0) {
 		toMoveZ = 0;
 	}
+	posX += toMoveX;
+	posY += toMoveY;
+	posZ += toMoveZ;
+}
+
+//在从起始位置到终点位置的直线周围随机取几个点作为临时目标，当到达一个目标后重复上述操作
+void Drone::flyToPos2(GLdouble tarX, GLdouble tarY, GLdouble tarZ, int mode)
+{
+	this->mode = mode;
+	this->targetX = tarX;
+	this->targetY = tarY;
+	this->targetZ = tarZ;
+
+	GLdouble leftTmpX = tmpTargetX - posX;
+	GLdouble leftTmpY = tmpTargetY - posY;
+	GLdouble leftTmpZ = tmpTargetZ - posZ;
 }
 
 void Drone::hoverAtPos(GLdouble tarX, GLdouble tarY, GLdouble tarZ)
 {
+
 }
 
 void Drone::escapeFromPos(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdouble posX2, GLdouble posY2, GLdouble posZ2)
@@ -75,10 +93,7 @@ void Drone::searchInArea(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdoubl
 }
 
 void Drone::draw()
-{	
-	posX += toMoveX;
-	posY += toMoveY;
-	posZ += toMoveZ;
+{		
 	glTranslatef(this->posX, this->posY, this->posZ);
 	innerObject.Draw();
 }
