@@ -113,12 +113,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Drone.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjLoader.cpp" />
     <ClCompile Include="tiny_obj_loader.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BaseFloor.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Drone.h" />
     <ClInclude Include="glad.h" />
     <ClInclude Include="khrplatform.h" />

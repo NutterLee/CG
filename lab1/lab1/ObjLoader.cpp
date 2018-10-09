@@ -70,7 +70,6 @@ ObjLoader::ObjLoader(string filename)
 }
 
 void ObjLoader::Draw() {
-
 	glBegin(GL_TRIANGLES);//开始绘制
 	for (int i = 0; i < fSets.size(); i++) {
 		GLfloat VN[3];
@@ -123,7 +122,6 @@ void ObjLoader::Draw() {
 			VN[2] = vec3[2] / D;
 
 			glNormal3f(VN[0], VN[1], VN[2]);//绘制法向量
-
 			glVertex3f(SV1[0], SV1[1], SV1[2]);//绘制三角面片
 			glVertex3f(SV2[0], SV2[1], SV2[2]);
 			glVertex3f(SV3[0], SV3[1], SV3[2]);
