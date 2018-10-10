@@ -14,9 +14,6 @@ Camera camera;
 MarkSphere startSphere;
 MarkSphere stopSphere;
 //实现移动鼠标观察模型所需变量
-static float c = 3.1415926 / 180.0f;
-static float r = 60.0f;
-static int degree = 90;
 static int oldPosY = -1;
 static int oldPosX = -1;
 //drone飞行的目的地
@@ -49,18 +46,15 @@ void init() {
 void display()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//表示接下来将对模型视景进行操作	
 	glLoadIdentity(); 	
-	setLightRes();		
-	//glPushMatrix();
-	gluLookAt(camera.getX(), camera.getY(), camera.getZ(),    //摄像机位置
+	setLightRes();	
+	gluLookAt(camera.getX()*2, camera.getY()*1.1, camera.getZ()*1.1,    //摄像机位置
 		baseFloor.centerX(), 0.0, baseFloor.centerZ(),   //焦点坐标
 		0.0, 1.0, 0.0);   //摄像机机顶方向矢量
 	baseFloor.draw();
 	startSphere.draw();
 	stopSphere.draw();
 	drone.draw();
-	//glPopMatrix();
 	glutSwapBuffers();
 }
 
@@ -69,7 +63,9 @@ void display()
 //2. 将drone向target靠拢
 void TimeFunction(int value)
 {	
-	drone.flyToPos(10.0, 10.0, 20.0, 0);
+	//drone.flyToPos2(20.0, 20.0, 20.0, 0);
+	//drone.hoverAtPos(0,0,0);
+	drone.escapeFromPos(0, 0, 0, 1, 1, 1);
 	glutTimerFunc(20, TimeFunction, 1);
 }
 
@@ -78,7 +74,7 @@ void reshape(int width, int height)
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(40.0f, (GLdouble)width / (GLdouble)height, 1.0f, 300.0f);
+	gluPerspective(50.0f, (GLdouble)width / (GLdouble)height, 1.0f, 300.0f);
 	glMatrixMode(GL_MODELVIEW);
 }
 
@@ -114,7 +110,7 @@ void myIdle()
 int main(int argc, char* argv[])
 {
 	drone.load(filePath);
-	drone.setPos(0, 0, 10);
+	drone.setPos(0, 0, 0);
 	startSphere.setPos(drone.getPosX(), drone.getPosY(), drone.getPosZ());
 	startSphere.setRadius(1.0);
 	stopSphere.setPos(targetX, targetY, targetZ);
