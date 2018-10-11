@@ -2,7 +2,6 @@
 #include<cmath>
 class Camera
 {
-
 private:
 	double theta;      //确定x和z的位置
 	double y;          //y位置

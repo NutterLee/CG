@@ -10,7 +10,7 @@ ObjLoader::ObjLoader(string filename)
 	f.open(filename, ios::in);
 	if (!f.is_open()) {
 		cout << "Something Went Wrong When Opening Objfiles" << endl;
-		return;
+		exit(1);
 	}
 
 	while (!f.eof()) {

@@ -1,8 +1,6 @@
 
-lab1/.vs/lab1/v14/.suo
-*.dll
+lab1/lab1/x64/Release/main.obj
+lab1/lab1/x64/Release/tiny_obj_loader.obj
+lab1/lab1/Debug/lab1.tlog/CL.read.1.tlog
 *.exe
-*.db
-*.log
 *.tlog
-lab1/lab1.VC.VC.opendb

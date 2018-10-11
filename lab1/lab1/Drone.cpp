@@ -4,6 +4,8 @@ std::default_random_engine generator;
 std::uniform_int_distribution<int> dis(-2, 2);
 std::uniform_int_distribution<int> escapeScale(5, 10);
 std::uniform_int_distribution<int> accDis(-10, 10);
+//生成的加速度不会太小
+std::uniform_int_distribution<int> accDis2(5, 10);
 std::uniform_int_distribution<int> randomData(-10, 10);
 
 void Drone::load(string path)
@@ -36,6 +38,31 @@ void Drone::changeAccWithTargeDirect(GLdouble verX, GLdouble verY, GLdouble verZ
 		if (newAccZ * verZ < 0) {
 			newAccZ = -newAccZ;
 		}
+
+		//要求生成夹角为30°以上的值
+		//先求夹角
+		GLdouble cosAng = 1;
+		cosAng = (newAccX*verX + newAccY*verY +
+			newAccZ*verZ) / (sqrt(newAccX*newAccX + newAccY*newAccY + newAccZ*newAccZ)*
+				sqrt(verX*verX + verY*verY + verZ*verZ));
+		while (cosAng>0.7)
+		{
+			newAccX = accDis(generator) / 10.0*maxAccX;
+			if (newAccX *verX < 0) {
+				newAccX = -newAccX;
+			}
+			newAccY = accDis(generator) / 10.0*maxAccY;
+			if (newAccY *verY < 0) {
+				newAccY = -newAccY;
+			}
+			newAccZ = accDis(generator) / 10.0*maxAccZ;
+			if (newAccZ * verZ < 0) {
+				newAccZ = -newAccZ;
+			}
+			cosAng = (newAccX*verX + newAccY*verY +
+				newAccZ*verZ) / (sqrt(newAccX*newAccX + newAccY*newAccY + newAccZ*newAccZ)*
+					sqrt(verX*verX + verY*verY + verZ*verZ));
+		}
 		accX = newAccX;
 		accY = newAccY;
 		accZ = newAccZ;
@@ -45,59 +72,58 @@ void Drone::changeAccWithTargeDirect(GLdouble verX, GLdouble verY, GLdouble verZ
 }
 
 void Drone::changeAccWithLimitSpace(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdouble posX2, GLdouble posY2, GLdouble posZ2)
-{
+{		
 	if (needChangeAcc()) {
 		GLdouble newAccX = accDis(generator) / 10.0*maxAccX;
 		GLdouble newAccY = accDis(generator) / 10.0*maxAccY;
-		GLdouble newAccZ = accDis(generator) / 10.0*maxAccZ;  
+		GLdouble newAccZ = accDis(generator) / 10.0*maxAccZ;
 		GLdouble tmpPosXMax = posX + maxStopLength / 2.0;
 		GLdouble tmpPosXMin = posX - maxStopLength / 2.0;
-		//当没有到边界时
-		if (((tmpPosXMax > posX1&&tmpPosXMax < posX2) || (tmpPosXMax<posX1&&tmpPosXMax>posX2)) &&
-			((tmpPosXMin > posX1&&tmpPosXMin < posX2) || (tmpPosXMin<posX1&&tmpPosXMin>posX2)))
-		{			
-				accX = newAccX;
-		}
-		else {
-			//到达边界了，调整加速度与当前速度的方向相反
-			if (newAccX*speedX >= 0) {
+		bool hasChangeSpeed = false;
+		//当到边界时
+		if (tmpPosXMax<min(posX1,posX2)||tmpPosXMax>max(posX1,posX2)||tmpPosXMin<min(posX1,posX2)||tmpPosXMin>max(posX1,posX2))
+		 {
+			//到达边界了，调整加速度指向中心方向
+			cout << "hit x !" << endl;
+			GLdouble centerX = (posX1 + posX2) / 2.0;
+			if (newAccX*(centerX-posX) <= 0) {
 				newAccX = -newAccX;
 			}
 			accX = newAccX;
+			hasChangeSpeed = true;
 		}
 		GLdouble tmpPosYMax = posY + maxStopLength / 2.0;
 		GLdouble tmpPosYMin = posY - maxStopLength / 2.0;
 		//当没有到边界时
-		if (((tmpPosYMax > posY1&&tmpPosYMax < posY2) || (tmpPosYMax<posY1&&tmpPosYMax>posY2)) &&
-			((tmpPosYMin > posY1&&tmpPosYMin < posY2) || (tmpPosYMin<posY1&&tmpPosYMin>posY2)))
+		if (tmpPosYMax<min(posY1, posY2) || tmpPosYMax>max(posY1, posY2) || tmpPosYMin<min(posY1,posY2) || tmpPosYMin>max(posY1, posY2))
 		{
-			accY = newAccY;
-		}
-		else {
-			//到达边界了，调整加速度与当前速度的方向相反
-			if (newAccY*speedY >= 0) {
+			//到达边界了
+			GLdouble centerY = (posY1 + posY2) / 2.0;
+			if (newAccY*(centerY-posY)<= 0) {
 				newAccY = -newAccY;
 			}
 			accY = newAccY;
+			cout << "hit y!" << endl;
+			hasChangeSpeed = true;
 		}
 		GLdouble tmpPosZMax = posZ + maxStopLength / 2.0;
 		GLdouble tmpPosZMin = posZ - maxStopLength / 2.0;
 		//当没有到边界时
-		if (((tmpPosZMax > posZ1&&tmpPosZMax < posZ2) || (tmpPosZMax<posZ1&&tmpPosZMax>posZ2)) &&
-			((tmpPosZMin > posZ1&&tmpPosZMin < posZ2) || (tmpPosZMin<posZ1&&tmpPosZMin>posZ2)))
-		{
-			accZ = newAccZ;
-		}
-		else {
+		if (tmpPosZMax<min(posZ1, posZ2) || tmpPosZMax>max(posZ1, posZ2) || tmpPosZMin<min(posZ1, posZ2) || tmpPosZMin>max(posZ1, posZ2))
+		 {
 			//到达边界了，调整加速度与当前速度的方向相反
-			if (newAccZ*speedZ >= 0) {
+			GLdouble centerZ = (posZ1 + posZ2) / 2.0;
+			if (newAccZ*(centerZ-posZ) <= 0) {
 				newAccZ = -newAccZ;
 			}
 			accZ = newAccZ;
+			hasChangeSpeed = true;
+			cout << "hit z!" << endl;
 		}
 		cout << "current acc: " << accX << ", " << accY << ", " << accZ << endl;
-		updateLastChangeAccPos();
-	}
+		if (hasChangeSpeed)
+			updateLastChangeAccPos();
+	}	
 }
 
 void Drone::changeAccWithTargePos(GLdouble _tarX, GLdouble _tarY, GLdouble _tarZ)
@@ -189,6 +215,8 @@ void Drone::hoverAtPos(GLdouble tarX, GLdouble tarY, GLdouble tarZ)
 	GLdouble posX2 = tarX - maxStopLength*scale;
 	GLdouble posY2 = tarY - maxStopLength*scale;
 	GLdouble posZ2 = tarZ - maxStopLength*scale;
+	//cout << "limit space:" << posX1 << ", " << posY1 << ", " << posZ1 << "  "
+	//	<< posX2 << ", " << posY2 << ", " << posZ2 << endl;
 	changeAccWithLimitSpace(posX1, posY1, posZ1, posX2, posY2, posZ2);
 	changeSpeed();
 	changePos();
@@ -238,4 +266,18 @@ void Drone::draw()
 {		
 	glTranslatef(this->posX, this->posY, this->posZ);
 	innerObject.Draw();
+}
+
+GLdouble min(GLdouble x, GLdouble y)
+{
+	if(x<y)
+	return x;
+	else return y;
+}
+
+GLdouble max(GLdouble x, GLdouble y)
+{
+	if (x > y)
+		return x;
+	else return y;
 }

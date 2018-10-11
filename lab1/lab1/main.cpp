@@ -7,9 +7,9 @@
 #include"MarkSphere.h"
 using namespace std;
 //模型路径
-string filePath = "F:\\CG\\lab1\\data\\drone\\Drone.obj";
+string filePath = "..\\data\\drone\\Drone.obj";
 Drone drone;
-BaseFloor baseFloor(100, 100);
+BaseFloor baseFloor(300, 300);
 Camera camera;
 MarkSphere startSphere;
 MarkSphere stopSphere;
@@ -32,7 +32,7 @@ void setLightRes() {
 //初始化
 void init() {
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(700, 700);
 	glutCreateWindow("ObjLoader");
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
@@ -48,7 +48,7 @@ void display()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity(); 	
 	setLightRes();	
-	gluLookAt(camera.getX()*2, camera.getY()*1.1, camera.getZ()*1.1,    //摄像机位置
+	gluLookAt(camera.getX(), camera.getY(), camera.getZ(),    //摄像机位置
 		baseFloor.centerX(), 0.0, baseFloor.centerZ(),   //焦点坐标
 		0.0, 1.0, 0.0);   //摄像机机顶方向矢量
 	baseFloor.draw();
@@ -63,8 +63,8 @@ void display()
 //2. 将drone向target靠拢
 void TimeFunction(int value)
 {	
-	//drone.flyToPos2(20.0, 20.0, 20.0, 0);
-	//drone.hoverAtPos(0,0,0);
+	//drone.flyToPos2(0.0, 0.0, 0.0, 0);
+	//drone.hoverAtPos(baseFloor.centerX()*0.3, 10, baseFloor.centerZ()*0.5);
 	drone.escapeFromPos(0, 0, 0, 1, 1, 1);
 	glutTimerFunc(20, TimeFunction, 1);
 }
@@ -74,7 +74,7 @@ void reshape(int width, int height)
 	glViewport(0, 0, width, height);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective(50.0f, (GLdouble)width / (GLdouble)height, 1.0f, 300.0f);
+	gluPerspective(80.0f, (GLdouble)width / (GLdouble)height, 1.0f, 700.0f);
 	glMatrixMode(GL_MODELVIEW);
 }
 
@@ -109,8 +109,10 @@ void myIdle()
 
 int main(int argc, char* argv[])
 {
+	
 	drone.load(filePath);
-	drone.setPos(0, 0, 0);
+	drone.setPos(baseFloor.centerX()*0.3, 10, baseFloor.centerZ()*0.5
+	);
 	startSphere.setPos(drone.getPosX(), drone.getPosY(), drone.getPosZ());
 	startSphere.setRadius(1.0);
 	stopSphere.setPos(targetX, targetY, targetZ);

@@ -27,9 +27,9 @@ private:
 	GLdouble maxAccY = 0.2;
 	GLdouble maxAccZ = 0.2;
 	//每一帧的加速度的值
-	GLdouble accX = 0;
-	GLdouble accY = 0;
-	GLdouble accZ = 0;
+	GLdouble accX = 0.1;
+	GLdouble accY = 0.1;
+	GLdouble accZ = 0.1;
 	//drone在三维上的速度
 	GLdouble speedX;
 	GLdouble speedY;
@@ -86,8 +86,11 @@ public:
 	//判断条件：某个方向上的位移量超过了最大允许误差的1/2
 	bool needChangeAcc() {
 		GLdouble scale = maxStopLength * 5;
-		return (abs(posX - lastChangeAccPosX) >scale || abs(posY - lastChangeAccPosY) >scale || abs(posZ - lastChangeAccPosZ) > scale
-			||accX==0||accY==0||accZ==0);
+		GLdouble xChange = abs(posX - lastChangeAccPosX);
+		GLdouble yChange = abs(posY - lastChangeAccPosY);
+		GLdouble zChange = abs(posZ - lastChangeAccPosZ);
+		cout << "scale:" << scale << ", changes:" << xChange << "," << yChange << ","<<zChange << endl;
+		return xChange >= scale || yChange >= scale || zChange >= scale;
 		//return true;
 	}
 
@@ -162,3 +165,7 @@ public:
 	GLdouble getPosY() { return posY; }
 	GLdouble getPosZ() { return posZ; }
 };
+
+GLdouble min(GLdouble x, GLdouble y);
+
+GLdouble max(GLdouble x, GLdouble y);
