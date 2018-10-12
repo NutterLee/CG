@@ -128,7 +128,7 @@ void handleKeybord(unsigned char key, int x, int y) {
 		displayMode = 4;
 		break;
 	}
-	case 'i': {
+	case 'j': {
 		displayMode = 5;
 		break;
 	}

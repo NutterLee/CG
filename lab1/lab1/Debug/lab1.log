@@ -1,5 +1,0 @@
-﻿  main.cpp
-f:\cg\lab1\lab1\main.cpp(19): warning C4305: “初始化”: 从“double”到“float”截断
-f:\cg\lab1\lab1\main.cpp(66): warning C4244: “参数”: 从“GLdouble”转换到“GLfloat”，可能丢失数据
-  lab1.vcxproj -> F:\CG\lab1\Debug\lab1.exe
-  lab1.vcxproj -> F:\CG\lab1\Debug\lab1.pdb (Partial PDB)
