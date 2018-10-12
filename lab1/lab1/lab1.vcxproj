@@ -117,7 +117,6 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjLoader.cpp" />
-    <ClCompile Include="tiny_obj_loader.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseFloor.h" />
@@ -128,7 +127,6 @@
     <ClInclude Include="ObjLoader.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="MarkSphere.h" />
-    <ClInclude Include="tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="lab1.rc" />

@@ -5,6 +5,7 @@
 #include<iostream>
 #include"Camera.h"
 #include"MarkSphere.h"
+#include <stdlib.h>
 using namespace std;
 //模型路径
 string filePath = "..\\data\\drone\\Drone.obj";
@@ -17,9 +18,11 @@ MarkSphere stopSphere;
 static int oldPosY = -1;
 static int oldPosX = -1;
 //drone飞行的目的地
-GLdouble targetX=30;
-GLdouble targetY=30;
-GLdouble targetZ=30;
+GLdouble targetX=0;
+GLdouble targetY=0;
+GLdouble targetZ=0;
+//测试时用的模式
+int displayMode = 0;
 
 //安置光源
 void setLightRes() {
@@ -39,8 +42,7 @@ void init() {
 	setLightRes();
 	glEnable(GL_LIGHT1);
 	glEnable(GL_DEPTH_TEST);	
-	baseFloor.create();
-	
+	baseFloor.create();	
 }
 
 void display()
@@ -63,10 +65,76 @@ void display()
 //2. 将drone向target靠拢
 void TimeFunction(int value)
 {	
-	//drone.flyToPos2(0.0, 0.0, 0.0, 0);
-	//drone.hoverAtPos(baseFloor.centerX()*0.3, 10, baseFloor.centerZ()*0.5);
-	drone.escapeFromPos(0, 0, 0, 1, 1, 1);
+	switch (displayMode)
+	{
+	case 0: {
+		drone.reset();
+		drone.setPos(baseFloor.centerX()*0.3, 10, baseFloor.centerZ()*0.5);
+		break;
+	}
+	case 1: {
+		drone.flyToPos(0, 0, 0, 0);
+		break;
+	}
+	case 2: {
+		drone.flyToPos2(0.0, 0.0, 0.0, 0);
+		break;
+	}
+	case 3: {
+		drone.hoverAtPos(baseFloor.centerX()*0.3, 10, baseFloor.centerZ()*0.5);
+		break;
+	}
+	case 4: {
+		drone.escapeFromPos(0, 0, 0, 1, 1, 1);
+		break;
+	}
+	case 5: {
+		drone.searchInArea(0, 10, 0, 100, 40, 100);
+		break;
+	}
+	default:
+		break;
+	}
 	glutTimerFunc(20, TimeFunction, 1);
+}
+
+void handleKeybord(unsigned char key, int x, int y) {
+	//按esc时结束进程
+	cout << "got key:" << key << endl;
+	drone.reset();
+	drone.setPos(baseFloor.centerX()*0.3, 10, baseFloor.centerZ()*0.5);
+	switch (key)
+	{
+	case 'a': {
+		exit(0);
+	}
+	case 's': {
+		displayMode = 0;
+		break;
+	}
+	case 'd': {
+		displayMode = 1;
+		break;
+	}
+	case 'f': {
+		displayMode = 2;
+		break;
+	}
+	case 'g': {
+		displayMode = 3;
+		break;
+	}
+	case 'h': {
+		displayMode = 4;
+		break;
+	}
+	case 'i': {
+		displayMode = 5;
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 void reshape(int width, int height)
@@ -111,8 +179,7 @@ int main(int argc, char* argv[])
 {
 	
 	drone.load(filePath);
-	drone.setPos(baseFloor.centerX()*0.3, 10, baseFloor.centerZ()*0.5
-	);
+	drone.setPos(baseFloor.centerX()*0.3, 10, baseFloor.centerZ()*0.5);
 	startSphere.setPos(drone.getPosX(), drone.getPosY(), drone.getPosZ());
 	startSphere.setRadius(1.0);
 	stopSphere.setPos(targetX, targetY, targetZ);
@@ -122,6 +189,7 @@ int main(int argc, char* argv[])
 	glutDisplayFunc(display);
 	glutReshapeFunc(reshape);//屏幕大小自适应
 	glutMouseFunc(mouseMove); 
+	glutKeyboardFunc(handleKeybord);
 	glutMotionFunc(changeViewPoint);
 	glutIdleFunc(myIdle);
 	glutTimerFunc(20 , TimeFunction, 1);

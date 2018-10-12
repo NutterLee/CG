@@ -8,6 +8,53 @@ std::uniform_int_distribution<int> accDis(-10, 10);
 std::uniform_int_distribution<int> accDis2(5, 10);
 std::uniform_int_distribution<int> randomData(-10, 10);
 
+void Drone::reset()
+{
+	//当前坐标
+	posX = 0.0;
+	posY = 0.0;
+	posZ = 0.0;
+	//目标坐标
+	targetX=0;
+	targetY=0;
+	targetZ=0;
+	//每一帧中drone在三维上最大的速度
+	maxSpeedX = 1;
+	maxSpeedY = 1;
+	maxSpeedZ = 1;
+	//每一帧三维上drone的最大的加速度变化值（绝对值）
+	maxAccX = 0.2;
+	maxAccY = 0.2;
+	maxAccZ = 0.2;
+	//每一帧的加速度的值
+	accX = 0.1;
+	accY = 0.1;
+	accZ = 0.1;
+	//drone在三维上的速度
+	speedX=0;
+	speedY=0;
+	speedZ=0;
+	//上一次加速度变化点的位移
+	lastChangeAccPosX = 999;
+	lastChangeAccPosY = 999;
+	lastChangeAccPosZ = 999;
+	//距离悬停的点的最大允许偏移量
+	maxHoverLength = 5.0;
+	// 飞行mode,state 0表示非攻击mode，1表示攻击mode
+	mode = 0;
+	//攻击mode下发动快速靠近的最大距离
+	maxAttackLength = 10.0;
+	moveScale = 100.0;
+	//最大允许的接近误差
+	maxStopLength = 0.2;
+	//每一帧的时间间隔
+	timeSlice = 20 / 100.0;
+
+	//测试使用的参数
+	escapeFinish = true;
+	hasEscaped = false;
+}
+
 void Drone::load(string path)
 {
 	innerObject = ObjLoader(path);
@@ -126,66 +173,34 @@ void Drone::changeAccWithLimitSpace(GLdouble posX1, GLdouble posY1, GLdouble pos
 	}	
 }
 
-void Drone::changeAccWithTargePos(GLdouble _tarX, GLdouble _tarY, GLdouble _tarZ)
-{
 
-}
-
+//全速度直线接近
 void Drone::flyToPos(GLdouble tarX, GLdouble tarY, GLdouble tarZ, int mode)
 {
 	this->mode = mode;
 	this->targetX = tarX;
 	this->targetY = tarY;
 	this->targetZ = tarZ;
-	GLdouble deltaX = dis(generator) / moveScale;
-	GLdouble deltaY = dis(generator) / moveScale;
-	GLdouble deltaZ = dis(generator) / moveScale;
 	GLdouble leftX = targetX - posX;
 	GLdouble leftY = targetY - posY;
 	GLdouble leftZ = targetZ - posZ;
-	GLdouble staticMoveX = 0;
-	GLdouble staticMoveY = 0;
-	GLdouble staticMoveZ = 0;	
-	if (leftX > 0) {
-		staticMoveX = maxSpeedX > leftX ? leftX : maxSpeedX;
-	}
-	else if (leftX < 0) {
-		staticMoveX = -maxSpeedX > leftX ? -maxSpeedX : leftX;
-	}
-	if (leftY > 0) {
-		staticMoveY = maxSpeedY > leftY ? leftY : maxSpeedY;
-	}
-	else if (leftY < 0) {
-		staticMoveY = -maxSpeedY > leftY ? -maxSpeedY : leftY;
-	}
-	if (leftZ > 0) {
-		staticMoveZ = maxSpeedZ > leftZ ? leftZ : maxSpeedZ;
-	}
-	else if (leftZ < 0) {
-		staticMoveZ = -maxSpeedZ > leftZ ? -maxSpeedZ : leftZ;
-	}
-	if (mode == 1 && (leftX*leftX + leftY*leftY + leftZ*leftZ <= maxAttackLength*maxAttackLength)) {
-		toMoveX = staticMoveX;
-		toMoveY = staticMoveY;
-		toMoveZ = staticMoveZ;
+	if (abs(leftX) < maxStopLength&&abs(leftX) < maxStopLength&&abs(leftX) < maxStopLength) {
+		speedX = 0;
+		speedY = 0;
+		speedZ = 0;
 	}
 	else {
-		toMoveX = staticMoveX + deltaX;
-		toMoveY = staticMoveY + deltaY;
-		toMoveZ = staticMoveZ + deltaZ;
+		//单位化方向向量
+		GLdouble dirLength = sqrt(leftX*leftX + leftY*leftY + leftZ*leftZ);
+		leftX = leftX / dirLength;
+		leftY = leftY / dirLength;
+		leftZ = leftZ / dirLength;
+		GLdouble maxSpeedScale = sqrt(maxSpeedX*maxSpeedX + maxSpeedY*maxSpeedY + maxSpeedZ*maxSpeedZ);
+		speedX = leftX*maxSpeedScale;
+		speedY = leftY*maxSpeedScale;
+		speedZ = leftZ*maxSpeedScale;
+		changePos();
 	}	
-	if (leftX == 0) {
-		toMoveX = 0;
-	}
-	if (leftY == 0) {
-		toMoveY = 0;
-	}
-	if (leftZ == 0) {
-		toMoveZ = 0;
-	}
-	posX += toMoveX;
-	posY += toMoveY;
-	posZ += toMoveZ;
 }
 
 //在从起始位置到终点位置的直线周围随机取几个点作为临时目标，当到达一个目标后重复上述操作
@@ -225,7 +240,7 @@ void Drone::hoverAtPos(GLdouble tarX, GLdouble tarY, GLdouble tarZ)
 
 void Drone::escapeFromPos(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdouble posX2, GLdouble posY2, GLdouble posZ2)
 {
-	if (escapeFinish == true) {
+	if (escapeFinish == true&&hasEscaped==false) {
 		GLdouble dirX = posX1 - posX2;
 		GLdouble dirY = posY1 - posY2;
 		GLdouble dirZ = posZ1 - posZ2;
@@ -247,19 +262,25 @@ void Drone::escapeFromPos(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdoub
 		resY = posY2 + resY*scale;
 		resZ = posZ2 + resZ*scale;
 		cout << "fly to pos: " << resX << ", " << resY << ", " << resZ << endl;
+		targetX = resX;
+		targetY = resY;
+		targetZ = resZ;
 		flyToPos2(resX, resY, resZ, 0);
 	}
 	else {		
 		if (abs(posX - targetX) < maxStopLength * 10 && abs(posY - targetY) < maxStopLength * 10 && abs(posZ - targetZ) < maxStopLength * 10) {
-			escapeFinish = true;
+			escapeFinish = true;			
 		}
-		else flyToPos2(targetX, targetY, targetZ,0);
+		else flyToPos2(targetX, targetY, targetZ,0);		
 	}
-	
+	hasEscaped = true;
 }
 
 void Drone::searchInArea(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdouble posX2, GLdouble posY2, GLdouble posZ2)
 {
+	changeAccWithLimitSpace(posX1, posY1, posZ1, posX2, posY2, posZ2);
+	changeSpeed();
+	changePos();
 }
 
 void Drone::draw()

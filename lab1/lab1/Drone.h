@@ -14,11 +14,7 @@ private:
 	GLdouble targetX;
 	GLdouble targetY;
 	GLdouble targetZ;
-	//fly2采用的临时变量
-	GLdouble tmpTargetX;
-	GLdouble tmpTargetY;
-	GLdouble tmpTargetZ;
-	//每一帧中drone在三维上最大的位移（速度限制）
+	//每一帧中drone在三维上最大的速度
 	GLdouble maxSpeedX=1;
 	GLdouble maxSpeedY=1;
 	GLdouble maxSpeedZ=1;	
@@ -53,11 +49,10 @@ private:
 
 	//测试使用的参数
 	bool escapeFinish = true;
+	bool hasEscaped = false;
 public:
-	//每一帧将进行的位移量
-	GLdouble toMoveX = 0.0;
-	GLdouble toMoveY = 0.0;
-	GLdouble toMoveZ = 0.0;
+	//数据/状态还原函数
+	void reset();
 	//读入drone的obj
 	void load(string path);	
 	Drone(GLdouble _posX=0, GLdouble _posY=0, GLdouble _posZ=0) {
@@ -111,9 +106,7 @@ public:
 	//生成带有区域限制性的加速度，这个加速度的大小不确定，但如果某个方向坐标已经离边界的距离少于允许最大偏移的一半，则将该方向的加速度指向和运动速度的反向
 	//space的边界由两个对角线构成的立方体决定
 	void changeAccWithLimitSpace(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdouble posX2, GLdouble posY2, GLdouble posZ2);
-
-	//生成目标为target的加速度
-	void changeAccWithTargePos(GLdouble _tarX, GLdouble _tarY, GLdouble _tarZ);
+	
 
 	//根据加速度来变化速度
 	void changeSpeed() {
@@ -139,7 +132,6 @@ public:
 		posY += accY*timeSlice+speedY;
 		posZ += accZ*timeSlice+speedZ;
 	}
-	
 
 	void setMaxAcc(GLdouble _accX, GLdouble _accY, GLdouble _accZ) {
 		maxAccX = _accX;
@@ -147,7 +139,7 @@ public:
 		maxAccZ = _accZ;
 	}
 	//以下的函数都是对位移量进行修改，再在最后调用draw将位移量 体现出来
-	//飞近目标坐标，采取对应的mode
+	//快速靠近目标
 	void flyToPos(GLdouble tarX, GLdouble tarY, GLdouble tarZ, int mode);
 	//飞近目标
 	void flyToPos2(GLdouble tarX, GLdouble tarY, GLdouble tarZ, int mode);
@@ -157,8 +149,7 @@ public:
 	void escapeFromPos(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdouble posX2, GLdouble posY2, GLdouble posZ2);
 	//在某个范围内搜寻目标，范围为由两个坐标为对角线的空间区域
 	void searchInArea(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdouble posX2, GLdouble posY2, GLdouble posZ2);	
-	//绘图函数，根据偏移量绘图
-	//同时更新坐标
+	//绘图函数
 	void draw();
 
 	GLdouble getPosX() { return posX; }
