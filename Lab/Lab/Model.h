@@ -38,7 +38,7 @@ public:
 		{
 			this->meshes[i].Draw(shader);
 		}
-		cout << "draw done" << endl;
+		//cout << "draw done" << endl;
 	}
 
 private:

@@ -31,13 +31,16 @@ void MouseCallback(GLFWwindow *window, double xPos, double yPos);
 void DoMovement();
 
 // Camera
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(20.0f, 50.10f, 30.0f));
 bool keys[1024];
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
+
+//Light attributes
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 int main()
 {
@@ -60,9 +63,7 @@ int main()
 
 		return EXIT_FAILURE;
 	}
-
 	glfwMakeContextCurrent(window);
-
 	glfwGetFramebufferSize(window, &SCREEN_WIDTH, &SCREEN_HEIGHT);
 
 	// Set the required callback functions
@@ -87,18 +88,21 @@ int main()
 	// OpenGL options
 	glEnable(GL_DEPTH_TEST);
 
+
 	// Setup and compile our shaders
 	Shader shader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 
 	// Load models
 	//Model ourModel("res/models/drone/Drone.obj");
-	Model ourModel("res/models/env/House.obj");
+	//Model ourModel("res/models/env/House.obj");
+	Model ourModel("res/models/env/Street_environment.obj");
+	//Model ourModel("res/models/tie/TIE-fighter.obj");
 	//Model ourModel("res/models/nanosuit.obj");
 	// Draw in wireframe
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 
-	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 100.0f);
-
+	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 200.0f);
+	
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -116,6 +120,17 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		shader.Use();
+
+		GLint objectColorLoc = glGetUniformLocation(shader.Program, "objectColor");
+		GLint lightColorLoc = glGetUniformLocation(shader.Program, "lightColor");
+		GLint lightPosLoc = glGetUniformLocation(shader.Program, "lightPos");
+		GLint viewPosLoc = glGetUniformLocation(shader.Program, "viewPos");
+		glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
+		glUniform3f(lightColorLoc, 1.0f, 1.0f, 1.0f);
+		glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
+		glUniform3f(viewPosLoc, camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
+
+		GLint modelLoc = glGetUniformLocation(shader.Program, "model");
 
 		glm::mat4 view = camera.GetViewMatrix();
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));

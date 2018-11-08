@@ -83,22 +83,25 @@ public:
 		glUniform1f(glGetUniformLocation(shader.Program, "material.shininess"), 16.0f);
 
 		// Draw mesh
-		glBindVertexArray(this->VAO);
+		glBindVertexArray(this->VAO);		
 		glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
-
+		//Draw the light 
+		glBindVertexArray(this->lightVAO);
+		glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
 		// Always good practice to set everything back to defaults once configured.
 		for (GLuint i = 0; i < this->textures.size(); i++)
 		{
 			glActiveTexture(GL_TEXTURE0 + i);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
-		cout << "inner draw done" << endl;
+	//	cout << "inner draw done" << endl;
 	}
 
 private:
 	/*  Render data  */
-	GLuint VAO, VBO, EBO;
+	GLuint VAO, VBO, EBO,lightVAO;
 
 	/*  Functions    */
 	// Initializes all the buffer objects/arrays
@@ -108,8 +111,10 @@ private:
 		glGenVertexArrays(1, &this->VAO);
 		glGenBuffers(1, &this->VBO);
 		glGenBuffers(1, &this->EBO);
+		glGenVertexArrays(1, &this->lightVAO);
 
 		glBindVertexArray(this->VAO);
+		glBindVertexArray(this->lightVAO);
 		// Load data into vertex buffers
 		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
 		// A great thing about structs is that their memory layout is sequential for all its items.
