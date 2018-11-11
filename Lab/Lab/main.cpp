@@ -12,6 +12,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Drone.h"
+#include "Human.h"
 
 // GLM Mathemtics
 #include <glm/glm.hpp>
@@ -92,6 +93,7 @@ int main()
 	// Setup and compile our shaders
 	Shader shader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	Shader droneShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
+	Shader humanShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 
 	// Load models
 	//Model ourModel("res/models/drone/Drone.obj");
@@ -108,6 +110,10 @@ int main()
 	drone.loadModel("res/models/drone/Drone.obj");
 	drone.loadShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	drone.setPos(0.5, 0.5, 0.5);
+
+	Human human;
+	human.loadModel("res/models/human/man.obj");
+	human.setPos(0, 0, 0);
 
 	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 200.0f);
 	
@@ -128,6 +134,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		
+		//draw env
 		shader.Use();
 
 		GLint objectColorLoc = glGetUniformLocation(shader.Program, "objectColor");
@@ -152,6 +159,7 @@ int main()
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		ourModel.Draw(shader);
 
+		//draw drone
 		droneShader.Use();
 
 		GLint objectColorLoc_drone = glGetUniformLocation(droneShader.Program, "objectColor");
@@ -176,8 +184,33 @@ int main()
 		model_drone = glm::scale(model_drone, glm::vec3(0.05f, 0.05f, 0.05f));	// It's a bit too big for our scene, so scale it down
 		glUniformMatrix4fv(glGetUniformLocation(droneShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model_drone));
 		drone.draw(droneShader);
-		
-		//drone.draw(projection);
+
+		//draw  human
+		humanShader.Use();
+
+		GLint objectColorLoc_human = glGetUniformLocation(humanShader.Program, "objectColor");
+		GLint lightColorLoc_human = glGetUniformLocation(humanShader.Program, "lightColor");
+		GLint lightPosLoc_human = glGetUniformLocation(humanShader.Program, "lightPos");
+		GLint viewPosLoc_human = glGetUniformLocation(humanShader.Program, "viewPos");
+		glUniform3f(objectColorLoc_human, 1.0f, 1.0f, 1.0f);
+		glUniform3f(lightColorLoc_human, 0.8f, 1.0f, 1.0f);
+		glUniform3f(lightPosLoc_human, lightPos.x, lightPos.y, lightPos.z);
+		glUniform3f(viewPosLoc_human, camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
+
+		GLint modelLoc_human = glGetUniformLocation(humanShader.Program, "model");
+
+		glm::mat4 view_human = camera.GetViewMatrix();
+		glUniformMatrix4fv(glGetUniformLocation(humanShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(humanShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view_human));
+
+		// Draw the loaded model
+		glm::mat4 model_human;
+		//drone.flyToPos2(1.0f, 3.0f, 2.0f, 0);
+		model_human = glm::translate(model_human, glm::vec3(human.getPosX(), human.getPosY(), human.getPosZ())); // Translate it down a bit so it's at the center of the scene
+		model_human = glm::scale(model_human, glm::vec3(0.22f, 0.22f, 0.22f));	// It's a bit too big for our scene, so scale it down
+		glUniformMatrix4fv(glGetUniformLocation(humanShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model_human));
+		human.draw(humanShader);
+
 		// Swap the buffers
 		glfwSwapBuffers(window);
 	}

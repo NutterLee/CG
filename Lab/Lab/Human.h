@@ -25,6 +25,21 @@ private:
 	Model* innerObject=nullptr;
 
 public:
+	void setPos(GLdouble _posX, GLdouble _posY, GLdouble _posZ) {
+		posX = _posX;
+		posY = _posY;
+		posZ = _posZ;
+	}
+	GLdouble getPosX() {
+		return posX;
+	}
+	GLdouble getPosY() {
+		return posY;
+	}
+	GLdouble getPosZ() {
+		return posZ;
+	}
+
 	void draw(Shader shader);
 	void loadModel(string path);
 	//模仿人在地面随机走动的行为，只修改人物的当前位置

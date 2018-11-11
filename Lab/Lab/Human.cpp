@@ -1,7 +1,7 @@
 #include "Human.h"
-std::default_random_engine generator;
+std::default_random_engine generatorHuman;
 std::uniform_int_distribution<int> choice(0, 10);
-std::uniform_int_distribution<int> accDis(-10, 10);
+std::uniform_int_distribution<int> accDe(-10, 10);
 
 void Human::draw(Shader shader)
 {
@@ -25,7 +25,7 @@ void Human::randomMoveWithLimit(GLdouble posX1, GLdouble posZ1, GLdouble posX2, 
 	//根据这个加速度改变速度
 	//当生成的int是2的时候将速度变为0，因为人走着走着突然停下来是很正常的事情
 	//整个运行过程中都会检查(x,z)是否在(x1,z1),(x2,z2)所框起来的范围内，如果触碰到边界了就使得加速度方向与当前速度方向相反
-	int pickChoice = choice(generator);
+	int pickChoice = choice(generatorHuman);
 	if (pickChoice == 2) {
 		return;
 	}
@@ -35,8 +35,8 @@ void Human::randomMoveWithLimit(GLdouble posX1, GLdouble posZ1, GLdouble posX2, 
 	GLdouble deltaPosZ = 0;
 
 	if (pickChoice == 1) {
-		accX = accDis(generator) / 10.0*maxAcc;
-		accZ = accDis(generator) / 10.0*maxAcc;
+		accX = accDe(generatorHuman) / 10.0*maxAcc;
+		accZ = accDe(generatorHuman) / 10.0*maxAcc;
 	}
 	else {
 		if (this->posX + speedX*scale > max(posX1, posX2) || this->posX + speedX*scale < min(posX1, posX2))
