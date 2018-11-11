@@ -11,7 +11,7 @@
 // GL includes
 #include "Shader.h"
 #include "Camera.h"
-#include "Model.h"
+#include "Drone.h"
 
 // GLM Mathemtics
 #include <glm/glm.hpp>
@@ -31,7 +31,7 @@ void MouseCallback(GLFWwindow *window, double xPos, double yPos);
 void DoMovement();
 
 // Camera
-Camera camera(glm::vec3(20.0f, 50.10f, 30.0f));
+Camera camera(glm::vec3(10.0f, 15.10f, 20.0f));
 bool keys[1024];
 GLfloat lastX = 400, lastY = 300;
 bool firstMouse = true;
@@ -40,7 +40,7 @@ GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
 
 //Light attributes
-glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+glm::vec3 lightPos(1.2f, 5.0f, 2.0f);
 
 int main()
 {
@@ -91,6 +91,7 @@ int main()
 
 	// Setup and compile our shaders
 	Shader shader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
+	Shader droneShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 
 	// Load models
 	//Model ourModel("res/models/drone/Drone.obj");
@@ -100,6 +101,13 @@ int main()
 	//Model ourModel("res/models/nanosuit.obj");
 	// Draw in wireframe
 	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
+
+	//codes from lab1
+	Drone drone;
+	drone.loadModel("res/models/drone/Drone.obj");
+	drone.loadShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
+	drone.setPos(0.5, 0.5, 0.5);
 
 	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 200.0f);
 	
@@ -119,6 +127,7 @@ int main()
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		
 		shader.Use();
 
 		GLint objectColorLoc = glGetUniformLocation(shader.Program, "objectColor");
@@ -139,10 +148,36 @@ int main()
 		// Draw the loaded model
 		glm::mat4 model;
 		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // Translate it down a bit so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// It's a bit too big for our scene, so scale it down
+		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));	// It's a bit too big for our scene, so scale it down
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		ourModel.Draw(shader);
 
+		droneShader.Use();
+
+		GLint objectColorLoc_drone = glGetUniformLocation(droneShader.Program, "objectColor");
+		GLint lightColorLoc_drone = glGetUniformLocation(droneShader.Program, "lightColor");
+		GLint lightPosLoc_drone = glGetUniformLocation(droneShader.Program, "lightPos");
+		GLint viewPosLoc_drone = glGetUniformLocation(droneShader.Program, "viewPos");
+		glUniform3f(objectColorLoc_drone, 1.0f, 1.0f, 1.0f);
+		glUniform3f(lightColorLoc_drone, 0.8f, 1.0f, 1.0f);
+		glUniform3f(lightPosLoc_drone, lightPos.x, lightPos.y, lightPos.z);
+		glUniform3f(viewPosLoc_drone, camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
+
+		GLint modelLoc_drone = glGetUniformLocation(droneShader.Program, "model");
+
+		glm::mat4 view_drone = camera.GetViewMatrix();
+		glUniformMatrix4fv(glGetUniformLocation(droneShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(droneShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view_drone));
+
+		// Draw the loaded model
+		glm::mat4 model_drone;
+		drone.flyToPos2(1.0f, 3.0f, 2.0f,0);
+		model_drone = glm::translate(model_drone, glm::vec3(drone.getPosX(), drone.getPosY(), drone.getPosZ())); // Translate it down a bit so it's at the center of the scene
+		model_drone = glm::scale(model_drone, glm::vec3(0.05f, 0.05f, 0.05f));	// It's a bit too big for our scene, so scale it down
+		glUniformMatrix4fv(glGetUniformLocation(droneShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model_drone));
+		drone.draw(droneShader);
+		
+		//drone.draw(projection);
 		// Swap the buffers
 		glfwSwapBuffers(window);
 	}

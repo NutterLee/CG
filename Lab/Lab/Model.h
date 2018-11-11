@@ -21,6 +21,8 @@ using namespace std;
 
 GLint TextureFromFile(const char *path, string directory);
 
+extern glm::vec3 lightPos;
+
 class Model
 {
 public:
@@ -30,9 +32,13 @@ public:
 	{
 		this->loadModel(path);
 	}
+	Model(string path)
+	{
+		this->loadModel(path);
+	}
 
 	// Draws the model, and thus all its meshes
-	void Draw(Shader shader)
+  void Draw(Shader shader)
 	{
 		for (GLuint i = 0; i < this->meshes.size(); i++)
 		{
@@ -208,7 +214,7 @@ private:
 	}
 };
 
-GLint TextureFromFile(const char *path, string directory)
+inline GLint TextureFromFile(const char *path, string directory)
 {
 	//Generate texture ID and load texture data
 	cout << "try to get texture from path:" << path << "dir: " << directory << endl;

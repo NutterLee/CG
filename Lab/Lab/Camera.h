@@ -162,3 +162,5 @@ private:
 		this->up = glm::normalize(glm::cross(this->right, this->front));
 	}
 };
+
+extern Camera camera;
