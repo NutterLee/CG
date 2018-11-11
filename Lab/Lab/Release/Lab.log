@@ -8,9 +8,9 @@ main.cpp(247): warning C4244: “=”: 从“double”转换到“GLfloat”，�
 main.cpp(248): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
 LINK : warning LNK4098: 默认库“LIBCMT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
   正在生成代码
-  14 of 808 functions ( 1.7%) were compiled, the rest were copied from previous compilation.
-    3 functions were new in current compilation
-    20 functions had inline decision re-evaluated but remain unchanged
+  1 of 808 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   已完成代码的生成
 Drone.obj : warning LNK4049: 已导入本地定义的符号 ___glewLinkProgram
 Drone.obj : warning LNK4049: 已导入本地定义的符号 ___glewDeleteShader
