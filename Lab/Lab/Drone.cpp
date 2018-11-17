@@ -12,10 +12,7 @@ void Drone::loadModel(string path)
 	innerObject = new Model(path.c_str());
 }
 
-void Drone::loadShader(string path1, string path2)
-{
-	this->innerShader = new Shader(path1, path2);
-}
+
 
 void Drone::reset()
 {
@@ -118,7 +115,7 @@ void Drone::changeAccWithTargeDirect(GLdouble verX, GLdouble verY, GLdouble verZ
 		accY = newAccY;
 		accZ = newAccZ;
 		updateLastChangeAccPos();
-		cout << "now acc: " << accX << "," << accY << "," << accZ << endl;
+		//cout << "now acc: " << accX << "," << accY << "," << accZ << endl;
 	}
 }
 
@@ -135,7 +132,7 @@ void Drone::changeAccWithLimitSpace(GLdouble posX1, GLdouble posY1, GLdouble pos
 		if (tmpPosXMax<min(posX1, posX2) || tmpPosXMax>max(posX1, posX2) || tmpPosXMin<min(posX1, posX2) || tmpPosXMin>max(posX1, posX2))
 		{
 			//到达边界了，调整加速度指向中心方向
-			cout << "hit x !" << endl;
+			//cout << "hit x !" << endl;
 			GLdouble centerX = (posX1 + posX2) / 2.0;
 			if (newAccX*(centerX - posX) <= 0) {
 				newAccX = -newAccX;
@@ -154,7 +151,7 @@ void Drone::changeAccWithLimitSpace(GLdouble posX1, GLdouble posY1, GLdouble pos
 				newAccY = -newAccY;
 			}
 			accY = newAccY;
-			cout << "hit y!" << endl;
+			//cout << "hit y!" << endl;
 			hasChangeSpeed = true;
 		}
 		GLdouble tmpPosZMax = posZ + maxStopLength / 2.0;
@@ -169,9 +166,9 @@ void Drone::changeAccWithLimitSpace(GLdouble posX1, GLdouble posY1, GLdouble pos
 			}
 			accZ = newAccZ;
 			hasChangeSpeed = true;
-			cout << "hit z!" << endl;
+			//cout << "hit z!" << endl;
 		}
-		cout << "current acc: " << accX << ", " << accY << ", " << accZ << endl;
+		//cout << "current acc: " << accX << ", " << accY << ", " << accZ << endl;
 		if (hasChangeSpeed)
 			updateLastChangeAccPos();
 	}
@@ -218,11 +215,11 @@ void Drone::flyToPos2(GLdouble tarX, GLdouble tarY, GLdouble tarZ, int mode)
 	GLdouble leftTmpX = tarX - posX;
 	GLdouble leftTmpY = tarY - posY;
 	GLdouble leftTmpZ = tarZ - posZ;
-	cout << "left ver: " << leftTmpX << ", " << leftTmpY << ", " << leftTmpZ << endl;
+	//cout << "left ver: " << leftTmpX << ", " << leftTmpY << ", " << leftTmpZ << endl;
 	changeAccWithTargeDirect(leftTmpX, leftTmpY, leftTmpZ);
 	changeSpeed();
 	changePos();
-	cout << "current pos: " << posX << ", " << posY << ", " << posZ << endl;
+	//cout << "current pos: " << posX << ", " << posY << ", " << posZ << endl;
 }
 
 void Drone::hoverAtPos(GLdouble tarX, GLdouble tarY, GLdouble tarZ)
@@ -239,7 +236,7 @@ void Drone::hoverAtPos(GLdouble tarX, GLdouble tarY, GLdouble tarZ)
 	changeAccWithLimitSpace(posX1, posY1, posZ1, posX2, posY2, posZ2);
 	changeSpeed();
 	changePos();
-	cout << "current pos: " << posX << ", " << posY << ", " << posZ << endl;
+	//cout << "current drone pos: " << posX << ", " << posY << ", " << posZ << endl;
 }
 
 void Drone::escapeFromPos(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdouble posX2, GLdouble posY2, GLdouble posZ2)
@@ -265,7 +262,7 @@ void Drone::escapeFromPos(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdoub
 		resX = posX2 + resX*scale;
 		resY = posY2 + resY*scale;
 		resZ = posZ2 + resZ*scale;
-		cout << "fly to pos: " << resX << ", " << resY << ", " << resZ << endl;
+		//cout << "fly to pos: " << resX << ", " << resY << ", " << resZ << endl;
 		targetX = resX;
 		targetY = resY;
 		targetZ = resZ;
@@ -285,33 +282,6 @@ void Drone::searchInArea(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdoubl
 	changeAccWithLimitSpace(posX1, posY1, posZ1, posX2, posY2, posZ2);
 	changeSpeed();
 	changePos();
-}
-
-void Drone::draw(glm::mat4 projection)
-{	
-	innerShader->Use();
-
-	GLint objectColorLoc = glGetUniformLocation(innerShader->Program, "objectColor");
-	GLint lightColorLoc = glGetUniformLocation(innerShader->Program, "lightColor");
-	GLint lightPosLoc = glGetUniformLocation(innerShader->Program, "lightPos");
-	GLint viewPosLoc = glGetUniformLocation(innerShader->Program, "viewPos");
-	glUniform3f(objectColorLoc, 1.0f, 0.5f, 0.31f);
-	glUniform3f(lightColorLoc, 1.0f, 1.0f, 1.0f);
-	glUniform3f(lightPosLoc, lightPos.x, lightPos.y, lightPos.z);
-	glUniform3f(viewPosLoc, camera.GetPosition().x, camera.GetPosition().y, camera.GetPosition().z);
-
-	GLint modelLoc = glGetUniformLocation(innerShader->Program, "model");
-
-	glm::mat4 view = camera.GetViewMatrix();
-	glUniformMatrix4fv(glGetUniformLocation(innerShader->Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(glGetUniformLocation(innerShader->Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
-
-	// Draw the loaded model
-	glm::mat4 model;
-	model = glm::translate(model, glm::vec3(this->posX, this->posY, this->posZ)); // Translate it down a bit so it's at the center of the scene
-	model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f));	// It's a bit too big for our scene, so scale it down
-	glUniformMatrix4fv(glGetUniformLocation(innerShader->Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-	innerObject->Draw( *innerShader );
 }
 
 void Drone::draw(Shader shader)

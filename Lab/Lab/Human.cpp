@@ -1,7 +1,8 @@
 #include "Human.h"
 std::default_random_engine generatorHuman;
-std::uniform_int_distribution<int> choice(0, 10);
+std::uniform_int_distribution<int> choice(0, 20);
 std::uniform_int_distribution<int> accDe(-10, 10);
+std::uniform_int_distribution<int> speedDe(0,10);
 
 void Human::draw(Shader shader)
 {
@@ -57,4 +58,44 @@ void Human::randomMoveWithLimit(GLdouble posX1, GLdouble posZ1, GLdouble posX2, 
 	speedZ += scale*accZ;
 	posX += scale*speedX;
 	posZ += scale*speedZ;
+}
+
+void Human::randomMoveToPoint(GLdouble _posX, GLdouble _posZ)
+{
+	//走走停停的走向point
+	int pickChoice = choice(generatorHuman);
+	//0.2的概率向前走动
+	if (pickChoice == 2) {
+		//求指向目标方向的速度向量
+		GLdouble leftX = _posX - posX;
+		GLdouble leftZ = _posZ - posZ;
+		GLdouble deltaX = speedDe(generatorHuman) / 10.0*maxAcc*(leftX>0?1:-1);
+		GLdouble deltaZ =( leftX!=0?deltaX / leftX*leftZ:0);
+		posX += deltaX;
+		posZ += deltaZ;
+
+		//计算需要转动的角度
+		//当速度为0的时候不需要转动角度
+		if (deltaX == 0 && deltaZ == 0)
+		{
+			return;
+		}
+		cout << "directionX: " << directionX << "directionZ: " << directionZ << endl;
+		cout << "deltaX: " << deltaX << ",  deltaZ: " << deltaZ << endl;
+		//step1 求向量的乘积，再求其夹角余弦值，随后求角度并转换为0~360的区间
+		GLdouble tmpResult = directionX*deltaX + directionZ*deltaZ;
+		GLdouble tmpCos = tmpResult / (sqrt(directionX*directionX + directionZ*directionZ)*sqrt(deltaX*deltaX + deltaZ*deltaZ));
+		GLdouble toRotate = acos(tmpCos) / (2 * 3.14) * 360;
+		
+		//step2 计算叉乘来确定角度的正负
+		double xRes = deltaX*directionZ - directionX*deltaZ;
+		if (xRes < 0) toRotate = -toRotate;
+		//step3 更新待旋转夹角和朝向
+		rotateAngle = toRotate;
+		directionX = deltaX;
+		directionZ = deltaZ;
+		cout <<"xRes: "<<xRes<< " human rotate angle: " << rotateAngle << endl;
+	}
+	//cout << "current human pos: " << posX << ", " << posY << ", " << posZ << endl;
+	return;
 }

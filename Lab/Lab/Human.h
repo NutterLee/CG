@@ -22,6 +22,13 @@ private:
 	//修改此参数可以对运动速度进行修改
 	GLdouble scale = 1.0;
 
+	//以下为人脸朝向的方向向量
+	GLdouble directionX=0;
+	GLdouble directionZ=1;
+
+	//以下为下一次操作需要转动的角
+	float rotateAngle = 0.0;
+
 	Model* innerObject=nullptr;
 
 public:
@@ -30,6 +37,13 @@ public:
 		posY = _posY;
 		posZ = _posZ;
 	}
+	//设置人脸的朝向，(directionX,directionZ)应该是一个单位向量
+	//起点是(0,0)以人当前的位置为起点
+	void setDirection(GLdouble _dirX, GLdouble _dirZ) {
+		directionX = _dirX;
+		directionZ = _dirZ; 
+	}
+
 	GLdouble getPosX() {
 		return posX;
 	}
@@ -39,6 +53,12 @@ public:
 	GLdouble getPosZ() {
 		return posZ;
 	}
+	float getRotateAngle() {
+		return rotateAngle;
+	}
+	void setRotateAngle(GLdouble _ang) {
+		rotateAngle = _ang;
+	}
 
 	void draw(Shader shader);
 	void loadModel(string path);
@@ -46,6 +66,11 @@ public:
 	void randomMove();
 	//默认y值（即高度不变）,在一定范围内随机走动
 	void randomMoveWithLimit(GLdouble posX1, GLdouble posZ1, GLdouble posX2, GLdouble posZ2);
+	//走走停停走到posX，posY
+	void randomMoveToPoint(GLdouble posX, GLdouble posZ);
+	//演示用函数 
+	void staticMove();
+	
 	~Human() {
 		if (this->innerObject != nullptr) {
 			delete innerObject;

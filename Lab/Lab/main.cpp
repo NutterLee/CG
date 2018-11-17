@@ -39,6 +39,8 @@ bool firstMouse = true;
 
 GLfloat deltaTime = 0.0f;
 GLfloat lastFrame = 0.0f;
+//todo 利用deltaTime来设置时间间隔，只有时间间隔到达一定的程度才会进行调整加速度，速度什么的
+GLfloat calculateTime = 0.0f;
 
 //Light attributes
 glm::vec3 lightPos(1.2f, 5.0f, 2.0f);
@@ -96,24 +98,14 @@ int main()
 	Shader humanShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 
 	// Load models
-	//Model ourModel("res/models/drone/Drone.obj");
-	//Model ourModel("res/models/env/House.obj");
-	Model ourModel("res/models/env/Street_environment.obj");
-	//Model ourModel("res/models/tie/TIE-fighter.obj");
-	//Model ourModel("res/models/nanosuit.obj");
-	// Draw in wireframe
-	//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-
-
-	//codes from lab1
+	Model house("res/models/env/Street_environment.obj");
 	Drone drone;
 	drone.loadModel("res/models/drone/Drone.obj");
-	drone.loadShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	drone.setPos(0.5, 0.5, 0.5);
 
 	Human human;
 	human.loadModel("res/models/human/man.obj");
-	human.setPos(0, 0, 0);
+	human.setPos(0, -1.75, 0);
 
 	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 200.0f);
 	
@@ -123,6 +115,7 @@ int main()
 		// Set frame time
 		GLfloat currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
+		//cout << "delta Time: " << deltaTime << endl;
 		lastFrame = currentFrame;
 
 		// Check and call events
@@ -132,7 +125,6 @@ int main()
 		// Clear the colorbuffer
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		
 		//draw env
 		shader.Use();
@@ -155,9 +147,9 @@ int main()
 		// Draw the loaded model
 		glm::mat4 model;
 		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // Translate it down a bit so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(0.3f, 0.3f, 0.3f));	// It's a bit too big for our scene, so scale it down
+		model = glm::scale(model, glm::vec3(0.5f, 0.5f, 0.5f));	// It's a bit too big for our scene, so scale it down
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		ourModel.Draw(shader);
+		house.Draw(shader);
 
 		//draw drone
 		droneShader.Use();
@@ -205,12 +197,22 @@ int main()
 
 		// Draw the loaded model
 		glm::mat4 model_human;
-		//drone.flyToPos2(1.0f, 3.0f, 2.0f, 0);
+		//human.randomMoveWithLimit(0, 0, 4, 4);
+		human.randomMoveToPoint(-4, 4);
+		model_human = glm::scale(model_human, glm::vec3(0.15f, 0.15f, 0.15f));	// It's a bit too big for our scene, so scale it down
+		if (abs(human.getRotateAngle())> 0.1) {
+			cout << "hit rotate! angle : " << human.getRotateAngle() << endl;
+			float tmp = human.getRotateAngle();
+			model_human = glm::rotate(model_human, tmp, glm::vec3(0,1,0));
+			human.setRotateAngle(0);
+		}
+		
+		//model_human = glm::rotate(model_human, human.getRotateAngle(), glm::vec3(0, 1, 0));
+		//model_human = glm::rotate(model_human, -45.0f, glm::vec3(0, 1, 0));
 		model_human = glm::translate(model_human, glm::vec3(human.getPosX(), human.getPosY(), human.getPosZ())); // Translate it down a bit so it's at the center of the scene
-		model_human = glm::scale(model_human, glm::vec3(0.22f, 0.22f, 0.22f));	// It's a bit too big for our scene, so scale it down
+		
 		glUniformMatrix4fv(glGetUniformLocation(humanShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model_human));
 		human.draw(humanShader);
-
 		// Swap the buffers
 		glfwSwapBuffers(window);
 	}
@@ -282,3 +284,5 @@ void MouseCallback(GLFWwindow *window, double xPos, double yPos)
 
 	camera.ProcessMouseMovement(xOffset, yOffset);
 }
+
+

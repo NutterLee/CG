@@ -47,7 +47,6 @@ private:
 	GLdouble maxAttackLength = 1.00;
 
 	Model* innerObject=nullptr;
-	Shader* innerShader=nullptr;
 	GLdouble moveScale = 100.0;
 	//最大允许的接近误差
 	GLdouble maxStopLength = 0.02;
@@ -63,14 +62,10 @@ public:
 	void reset();
 	//读入drone的obj
 	void loadModel(string path);
-	//读入drone绑定的shader
-	void loadShader(string path1, string path2);
 
 	~Drone() {
 		if(innerObject!=nullptr)
 			delete this->innerObject;
-		if (innerShader != nullptr)
-			delete this->innerShader;
 	}
 
 	Drone(GLdouble _posX = 0, GLdouble _posY = 0, GLdouble _posZ = 0) {
@@ -102,7 +97,7 @@ public:
 		GLdouble xChange = abs(posX - lastChangeAccPosX);
 		GLdouble yChange = abs(posY - lastChangeAccPosY);
 		GLdouble zChange = abs(posZ - lastChangeAccPosZ);
-		cout << "scale:" << scale << ", changes:" << xChange << "," << yChange << "," << zChange << endl;
+		//cout << "scale:" << scale << ", changes:" << xChange << "," << yChange << "," << zChange << endl;
 		return xChange >= scale || yChange >= scale || zChange >= scale;
 		//return true;
 	}
@@ -140,7 +135,7 @@ public:
 		if (abs(speedZ) > maxSpeedZ) {
 			speedZ = speedZ - 2 * accZ*timeSlice;
 		}
-		cout << "current speed: " << speedX << "," << speedY << "," << speedZ << endl;
+		//cout << "current speed: " << speedX << "," << speedY << "," << speedZ << endl;
 	}
 
 	//根据速度来变化坐标
@@ -167,7 +162,6 @@ public:
 	//在某个范围内搜寻目标，范围为由两个坐标为对角线的空间区域
 	void searchInArea(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdouble posX2, GLdouble posY2, GLdouble posZ2);
 	//绘图函数
-	void draw(glm::mat4 projection);
 	void draw(Shader shader);
 
 	GLdouble getPosX() { return posX; }
