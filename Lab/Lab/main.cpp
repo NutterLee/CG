@@ -198,17 +198,20 @@ int main()
 		// Draw the loaded model
 		glm::mat4 model_human;
 		//human.randomMoveWithLimit(0, 0, 4, 4);
-		human.randomMoveToPoint(-4, 4);
+		//human.randomMoveToPoint(-4, 4);
+		human.staticMove();
 		model_human = glm::scale(model_human, glm::vec3(0.15f, 0.15f, 0.15f));	// It's a bit too big for our scene, so scale it down
-		if (abs(human.getRotateAngle())> 0.1) {
+		/*
+		if (abs(human.getRotateAngle())> 10) {
 			cout << "hit rotate! angle : " << human.getRotateAngle() << endl;
 			float tmp = human.getRotateAngle();
 			model_human = glm::rotate(model_human, tmp, glm::vec3(0,1,0));
 			human.setRotateAngle(0);
 		}
+		*/
 		
-		//model_human = glm::rotate(model_human, human.getRotateAngle(), glm::vec3(0, 1, 0));
-		//model_human = glm::rotate(model_human, -45.0f, glm::vec3(0, 1, 0));
+		model_human = glm::rotate(model_human, human.getRotateAngle(), glm::vec3(0, 1, 0));
+		//model_human = glm::rotate(model_human, -45.228f, glm::vec3(0, 1, 0));
 		model_human = glm::translate(model_human, glm::vec3(human.getPosX(), human.getPosY(), human.getPosZ())); // Translate it down a bit so it's at the center of the scene
 		
 		glUniformMatrix4fv(glGetUniformLocation(humanShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model_human));
@@ -218,6 +221,7 @@ int main()
 	}
 
 	glfwTerminate();
+	system("pause");
 	return 0;
 }
 
@@ -251,6 +255,7 @@ void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode
 {
 	if (GLFW_KEY_ESCAPE == key && GLFW_PRESS == action)
 	{
+		//system("pause");
 		glfwSetWindowShouldClose(window, GL_TRUE);
 	}
 

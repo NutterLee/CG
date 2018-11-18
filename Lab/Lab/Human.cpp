@@ -1,4 +1,5 @@
 #include "Human.h"
+#include <vector>
 std::default_random_engine generatorHuman;
 std::uniform_int_distribution<int> choice(0, 20);
 std::uniform_int_distribution<int> accDe(-10, 10);
@@ -75,27 +76,61 @@ void Human::randomMoveToPoint(GLdouble _posX, GLdouble _posZ)
 		posZ += deltaZ;
 
 		//计算需要转动的角度
-		//当速度为0的时候不需要转动角度
+		//当速度为0的时候不需要转动角度		
+		cout << endl << "--------------------------------" << endl;
+		cout << "targetX:" <<_posX << " targetZ:" << _posZ << endl;
+		cout << "current posX: " << posX << " posZ: " << posZ << endl;
+		cout << "directionX: " << directionX << " directionZ: " << directionZ << endl;
+		cout << "deltaX: " << deltaX << ",  deltaZ: " << deltaZ << endl;
+		cout << "leftX: " << leftX << ", leftZ: " << leftZ << endl;
+		if (abs(leftX) < 0.10 || abs(leftZ) < 0.10) {
+			return;
+		}
 		if (deltaX == 0 && deltaZ == 0)
 		{
 			return;
 		}
-		cout << "directionX: " << directionX << "directionZ: " << directionZ << endl;
-		cout << "deltaX: " << deltaX << ",  deltaZ: " << deltaZ << endl;
+		//todo: 方向的转动只有在距离目标足够远的情况下变化，走到以后人应该不动了
 		//step1 求向量的乘积，再求其夹角余弦值，随后求角度并转换为0~360的区间
 		GLdouble tmpResult = directionX*deltaX + directionZ*deltaZ;
-		GLdouble tmpCos = tmpResult / (sqrt(directionX*directionX + directionZ*directionZ)*sqrt(deltaX*deltaX + deltaZ*deltaZ));
+		GLdouble tmpCos = tmpResult / (sqrt(directionX*directionX + directionZ*directionZ)*sqrt(deltaX*deltaX + deltaZ*deltaZ));		
+		//因为浮点计算的不精确可能会导致bug 所以加了修改值
+		if (tmpCos >= 1)
+			tmpCos = 1;
+		else if (tmpCos <= -1)
+			tmpCos = -1;
 		GLdouble toRotate = acos(tmpCos) / (2 * 3.14) * 360;
-		
+		cout << "tmpCos:" << tmpCos << "toRotate:" << toRotate << endl;
 		//step2 计算叉乘来确定角度的正负
 		double xRes = deltaX*directionZ - directionX*deltaZ;
 		if (xRes < 0) toRotate = -toRotate;
 		//step3 更新待旋转夹角和朝向
-		rotateAngle = toRotate;
+		rotateAngle +=toRotate;
+		if (rotateAngle > 360)
+			rotateAngle -= 360;
+		else if(rotateAngle < -360)
+			rotateAngle += 360;
 		directionX = deltaX;
 		directionZ = deltaZ;
 		cout <<"xRes: "<<xRes<< " human rotate angle: " << rotateAngle << endl;
 	}
 	//cout << "current human pos: " << posX << ", " << posY << ", " << posZ << endl;
 	return;
+}
+
+void Human::staticMove()
+{
+	//一共七个点，在这七个点之间循环走动
+	static float movePoints[] = { 4.0,4.0,4.0,0.0,8.0,0.0,4.0,-4.0,0.0,-4.0,-4.0,0.0 ,0.0,0.0};
+	//从起点(0,0)开始，向第一个点进发
+	static int currentTarget = 0;
+	float targetX = movePoints[2 * (currentTarget % 7)];
+	float targetZ = movePoints[2 * (currentTarget % 7) + 1];
+	if (abs(targetX - posX) < 0.10&&abs(targetZ - posZ) < 0.10) {
+		currentTarget++;
+		randomMoveToPoint(movePoints[2 * (currentTarget % 7)], movePoints[2 * (currentTarget % 7) + 1]);
+	}
+	else {
+		randomMoveToPoint(targetX, targetZ);
+	}
 }
