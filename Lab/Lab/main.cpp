@@ -171,7 +171,8 @@ int main()
 
 		// Draw the loaded model
 		glm::mat4 model_drone;
-		drone.flyToPos2(1.0f, 3.0f, 2.0f,0);
+		//todo 此处的运动逻辑还需要修改
+		drone.searchInArea(-2.0f, 4.0f, -2.0f,2.0f,5.0f,2.0f);
 		model_drone = glm::translate(model_drone, glm::vec3(drone.getPosX(), drone.getPosY(), drone.getPosZ())); // Translate it down a bit so it's at the center of the scene
 		model_drone = glm::scale(model_drone, glm::vec3(0.05f, 0.05f, 0.05f));	// It's a bit too big for our scene, so scale it down
 		glUniformMatrix4fv(glGetUniformLocation(droneShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model_drone));
@@ -209,10 +210,12 @@ int main()
 			human.setRotateAngle(0);
 		}
 		*/
-		
-		model_human = glm::rotate(model_human, human.getRotateAngle(), glm::vec3(0, 1, 0));
+		model_human = glm::translate(model_human, glm::vec3(human.getPosX(), human.getPosY(), human.getPosZ()));
+
+		model_human = glm::rotate(model_human, human.getRotateAngle(), glm::vec3(0, 1,0));
+		model_human = glm::translate(model_human, glm::vec3(0, 0, 0));
 		//model_human = glm::rotate(model_human, -45.228f, glm::vec3(0, 1, 0));
-		model_human = glm::translate(model_human, glm::vec3(human.getPosX(), human.getPosY(), human.getPosZ())); // Translate it down a bit so it's at the center of the scene
+
 		
 		glUniformMatrix4fv(glGetUniformLocation(humanShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model_human));
 		human.draw(humanShader);
