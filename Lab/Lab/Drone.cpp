@@ -200,6 +200,7 @@ void Drone::flyToPos(GLdouble tarX, GLdouble tarY, GLdouble tarZ, int mode)
 		speedX = leftX*maxSpeedScale;
 		speedY = leftY*maxSpeedScale;
 		speedZ = leftZ*maxSpeedScale;
+		//cout<<"in "
 		changePos();
 	}
 }
@@ -284,9 +285,41 @@ void Drone::searchInArea(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdoubl
 	changePos();
 }
 
+void Drone::falldown()
+{
+	//已经坠落到地面了
+	if (posY <= 0) {
+		speedY = 0;
+		accY = 0;
+		posY = 0;
+		return;
+	}
+	
+	static GLdouble dropAcc = -0.003;
+	speedX = 0;
+	speedZ = 0;
+	speedY += dropAcc;
+	changePos();
+}
+
 void Drone::draw(Shader shader)
 {
 	innerObject->Draw(shader);
+}
+
+bool Drone::hasFound(GLdouble _posX, GLdouble _posY, GLdouble _posZ)
+{
+	//修正位置 人的头位于人模型基准点y+3.0的位置
+	GLdouble tPosX = _posX;
+	GLdouble tPosY = _posY + 3.0;
+	GLdouble tPosZ = _posZ;
+	GLdouble tmpDis = sqrt((tPosX - posX)*(tPosX - posX) + (tPosY - posY)*(tPosY - posY) + (tPosZ - posZ)*(tPosZ - posZ));
+	cout << "drone pos: " << posX << ", " << posY << " ," << posZ << endl;
+	cout << "human pos: " << _posX << ", " << _posY << ", " << _posZ << endl;
+	cout << "dis: " << tmpDis << endl;
+	if (tmpDis < maxDetectLengrh)
+		return true;
+	return false;
 }
 
 GLdouble min(GLdouble x, GLdouble y)

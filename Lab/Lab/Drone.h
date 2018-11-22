@@ -20,17 +20,17 @@ private:
 	GLdouble targetY;
 	GLdouble targetZ;
 	//每一帧中drone在三维上最大的速度
-	GLdouble maxSpeedX = 1;
-	GLdouble maxSpeedY = 1;
-	GLdouble maxSpeedZ = 1;
+	GLdouble maxSpeedX = 0.02;
+	GLdouble maxSpeedY = 0.02;
+	GLdouble maxSpeedZ = 0.02;
 	//每一帧三维上drone的最大的加速度变化值（绝对值）
-	GLdouble maxAccX = 0.02;
-	GLdouble maxAccY = 0.02;
-	GLdouble maxAccZ = 0.02;
+	GLdouble maxAccX = 0.005;
+	GLdouble maxAccY = 0.005;
+	GLdouble maxAccZ = 0.005;
 	//每一帧的加速度的值
-	GLdouble accX = 0.01;
-	GLdouble accY = 0.01;
-	GLdouble accZ = 0.01;
+	GLdouble accX = 0.005;
+	GLdouble accY = 0.005;
+	GLdouble accZ = 0.005;
 	//drone在三维上的速度
 	GLdouble speedX;
 	GLdouble speedY;
@@ -46,10 +46,13 @@ private:
 	//攻击mode下发动快速靠近的最大距离
 	GLdouble maxAttackLength = 1.00;
 
+	//侦查的最大范围
+	GLdouble maxDetectLengrh = 2.50;
+
 	Model* innerObject=nullptr;
 	GLdouble moveScale = 100.0;
 	//最大允许的接近误差
-	GLdouble maxStopLength = 0.02;
+	GLdouble maxStopLength = 0.2;
 	//每一帧的时间间隔
 	GLdouble timeSlice = 20 / 100.0;
 
@@ -62,6 +65,10 @@ public:
 	void reset();
 	//读入drone的obj
 	void loadModel(string path);
+	GLdouble getMaxDetectLength()
+	{
+		return maxDetectLengrh;
+	}
 
 	~Drone() {
 		if(innerObject!=nullptr)
@@ -143,6 +150,7 @@ public:
 		posX += accX*timeSlice + speedX;
 		posY += accY*timeSlice + speedY;
 		posZ += accZ*timeSlice + speedZ;
+		//cout << "drone pos: " << posX << ", " << posY << ", " << posZ << endl;
 	}
 
 	void setMaxAcc(GLdouble _accX, GLdouble _accY, GLdouble _accZ) {
@@ -161,12 +169,20 @@ public:
 	void escapeFromPos(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdouble posX2, GLdouble posY2, GLdouble posZ2);
 	//在某个范围内搜寻目标，范围为由两个坐标为对角线的空间区域
 	void searchInArea(GLdouble posX1, GLdouble posY1, GLdouble posZ1, GLdouble posX2, GLdouble posY2, GLdouble posZ2);
+	//坠落函数
+	void falldown();
 	//绘图函数
 	void draw(Shader shader);
 
 	GLdouble getPosX() { return posX; }
 	GLdouble getPosY() { return posY; }
 	GLdouble getPosZ() { return posZ; }
+
+	//判断无人机是否与人体相撞的函数
+	//因为要加上一些偏差量，所以其实要对无人机的位置进行一些修正
+	bool hasFound(GLdouble posX, GLdouble posY, GLdouble posZ);
+
+	
 };
 
 GLdouble min(GLdouble x, GLdouble y);

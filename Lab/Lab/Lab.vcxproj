@@ -129,6 +129,7 @@
     <ClCompile Include="Drone.cpp" />
     <ClCompile Include="Human.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mortar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\lamp.frag" />
@@ -144,6 +145,7 @@
     <ClInclude Include="Human.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="Mortar.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

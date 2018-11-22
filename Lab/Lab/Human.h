@@ -17,14 +17,18 @@ private:
 	//GLdouble speedY;
 	GLdouble speedZ;
 
-	GLdouble maxAcc = 0.05;
+	GLdouble maxAcc = 0.3;
 
 	//修改此参数可以对运动速度进行修改
-	GLdouble scale = 1.0;
+	GLdouble scale = 2.0;
 
 	//以下为人脸朝向的方向向量
 	GLdouble directionX=0;
 	GLdouble directionZ=1;
+
+	//staticMove 函数使用
+	GLdouble lastChangeDirPosX=-100;
+	GLdouble lastChangeDirPosZ=-100;
 
 	//以下为下一次操作需要转动的角
 	float rotateAngle = 0.0;

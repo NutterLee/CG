@@ -24,6 +24,9 @@
     <ClCompile Include="Human.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Mortar.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shaders\lamp.frag" />
@@ -50,6 +53,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Human.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Mortar.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
