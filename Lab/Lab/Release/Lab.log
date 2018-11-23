@@ -1,5 +1,4 @@
-﻿  Drone.cpp
-  main.cpp
+﻿  main.cpp
 f:\cg\lab\lab\Human.h(64): warning C4244: “=”: 从“GLdouble”转换到“float”，可能丢失数据
 main.cpp(124): warning C4244: “初始化”: 从“double”转换到“GLfloat”，可能丢失数据
 main.cpp(334): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
@@ -12,7 +11,7 @@ LINK : warning LNK4098: 默认库“LIBCMT”与其他库的使用冲突；请�
   正在生成代码
   1 of 841 functions ( 0.1%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    26 functions had inline decision re-evaluated but remain unchanged
+    21 functions had inline decision re-evaluated but remain unchanged
   已完成代码的生成
 Drone.obj : warning LNK4049: 已导入本地定义的符号 ___glewGenerateMipmap
 Drone.obj : warning LNK4049: 已导入本地定义的符号 ___glewGenBuffers

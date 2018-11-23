@@ -314,9 +314,9 @@ bool Drone::hasFound(GLdouble _posX, GLdouble _posY, GLdouble _posZ)
 	GLdouble tPosY = _posY + 3.0;
 	GLdouble tPosZ = _posZ;
 	GLdouble tmpDis = sqrt((tPosX - posX)*(tPosX - posX) + (tPosY - posY)*(tPosY - posY) + (tPosZ - posZ)*(tPosZ - posZ));
-	cout << "drone pos: " << posX << ", " << posY << " ," << posZ << endl;
-	cout << "human pos: " << _posX << ", " << _posY << ", " << _posZ << endl;
-	cout << "dis: " << tmpDis << endl;
+	//cout << "drone pos: " << posX << ", " << posY << " ," << posZ << endl;
+//	cout << "human pos: " << _posX << ", " << _posY << ", " << _posZ << endl;
+//	cout << "dis: " << tmpDis << endl;
 	if (tmpDis < maxDetectLengrh)
 		return true;
 	return false;

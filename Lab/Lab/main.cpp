@@ -60,7 +60,7 @@ int main()
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	// Create a GLFWwindow object that we can use for GLFW's functions
-	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "LearnOpenGL", nullptr, nullptr);
+	GLFWwindow *window = glfwCreateWindow(WIDTH, HEIGHT, "CG", nullptr, nullptr);
 
 	if (nullptr == window)
 	{
@@ -185,25 +185,24 @@ int main()
 			+ (drone.getPosZ() - human.getPosZ())*(drone.getPosZ() - human.getPosZ()));
 	//	cout << "distance: " << distance << endl;
 		if (droneState == false) {
-			cout << "falling down" << endl;
+			//cout << "falling down" << endl;
 			drone.falldown();
 		}
 		else if (drone.hasFound(human.getPosX(),human.getPosY(),human.getPosZ())||droneHasFound) {
-			cout << "found target!"<<"dis in found "<<distance << endl;
+			//cout << "found target!"<<"dis in found "<<distance << endl;
 			droneHasFound = true;
 			drone.flyToPos(human.getPosX(), human.getPosY()+3.0, human.getPosZ(), 0);
 			if (abs(distance) < 0.5)
 				droneState = false;			
 		}
 		else {
-			cout << "hit here!" << endl;
-			drone.searchInArea(-6.0f, 3.5f, -6.0f, 7.0f, 4.0f, 7.0f);
-			
+			//cout << "hit here!" << endl;
+			drone.searchInArea(-6.0f, 3.5f, -6.0f, 7.0f, 4.0f, 7.0f);			
 		}
 		//drone.falldown();
 		model_drone = glm::translate(model_drone, glm::vec3(drone.getPosX(), drone.getPosY(), drone.getPosZ())); // Translate it down a bit so it's at the center of the scene
 		//model_drone = glm::translate(model_drone, glm::vec3(0,3,0));
-		model_drone = glm::scale(model_drone, glm::vec3(0.03f, 0.03f, 0.03f));	// It's a bit too big for our scene, so scale it down
+		model_drone = glm::scale(model_drone, glm::vec3(0.02f, 0.02f, 0.02f));	// It's a bit too big for our scene, so scale it down
 		glUniformMatrix4fv(glGetUniformLocation(droneShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model_drone));
 		drone.draw(droneShader);
 
