@@ -1,5 +1,8 @@
 # CG
 
+12/03  update  
+sky box，texture viewpoint  
+
 
 ## Todo list
 
