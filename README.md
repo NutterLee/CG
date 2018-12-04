@@ -1,7 +1,14 @@
 # CG
 
 12/03  update  
-sky box，texture viewpoint  
+TODO LIST (new)  
+1. 人物和炮台的旋转有问题  
+2. 场景的纹理贴图？？？  
+3. 飞行器的随机策略，随机种子要设置一下  
+4. 飞行器的纹理  
+5. 天空盒  
+6. 叙事场景可以更复杂一点  
+
 
 
 ## Todo list
