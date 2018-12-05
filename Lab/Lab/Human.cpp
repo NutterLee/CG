@@ -111,7 +111,7 @@ void Human::randomMoveToPoint(GLdouble _posX, GLdouble _posZ)
 		else if (tmpCos <= -1)
 			tmpCos = -1;
 		GLdouble toRotate = acos(tmpCos) / (2 * 3.14) * 360;
-	//	cout << "tmpCos:" << tmpCos << "toRotate:" << toRotate << endl;
+		//cout << "tmpCos:" << tmpCos << "toRotate:" << toRotate << endl;
 		//step2 计算叉乘来确定角度的正负
 		double xRes = deltaX*directionZ - directionX*deltaZ;
 		if (xRes < 0) toRotate = -toRotate;
@@ -123,7 +123,7 @@ void Human::randomMoveToPoint(GLdouble _posX, GLdouble _posZ)
 			rotateAngle += 360;
 		directionX = deltaX;
 		directionZ = deltaZ;
-//		cout <<"xRes: "<<xRes<< " human rotate angle: " << rotateAngle << endl;
+		cout <<"xRes: "<<xRes<< " human rotate angle: " << rotateAngle << endl;
 	}
 	//cout << "current human pos: " << posX << ", " << posY << ", " << posZ << endl;
 	return;

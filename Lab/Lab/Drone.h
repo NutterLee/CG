@@ -20,13 +20,13 @@ private:
 	GLdouble targetY;
 	GLdouble targetZ;
 	//每一帧中drone在三维上最大的速度
-	GLdouble maxSpeedX = 0.02;
-	GLdouble maxSpeedY = 0.02;
-	GLdouble maxSpeedZ = 0.02;
+	GLdouble maxSpeedX = 0.01;
+	GLdouble maxSpeedY = 0.01;
+	GLdouble maxSpeedZ = 0.01;
 	//每一帧三维上drone的最大的加速度变化值（绝对值）
-	GLdouble maxAccX = 0.005;
-	GLdouble maxAccY = 0.005;
-	GLdouble maxAccZ = 0.005;
+	GLdouble maxAccX = 0.003;
+	GLdouble maxAccY = 0.003;
+	GLdouble maxAccZ = 0.003;
 	//每一帧的加速度的值
 	GLdouble accX = 0.005;
 	GLdouble accY = 0.005;

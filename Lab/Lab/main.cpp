@@ -14,6 +14,8 @@
 #include "Drone.h"
 #include "Human.h"
 #include "Mortar.h"
+#include "Texture.h"
+#include "Skybox.h"
 
 // GLM Mathemtics
 #include <glm/glm.hpp>
@@ -89,10 +91,20 @@ int main()
 	}
 
 	// Define the viewport dimensions
-	glViewport(10,10, SCREEN_WIDTH, SCREEN_HEIGHT);
+	glViewport(10, 10, SCREEN_WIDTH, SCREEN_HEIGHT);
 
+	std::vector<const char*> faces;
+	faces.push_back("res/images/hw_glacier/glacier_rt.tga");
+	faces.push_back("res/images/hw_glacier/glacier_lf.tga");
+	faces.push_back("res/images/hw_glacier/glacier_up.tga");
+	faces.push_back("res/images/hw_glacier/glacier_dn.tga");
+	faces.push_back("res/images/hw_glacier/glacier_bk.tga");
+	faces.push_back("res/images/hw_glacier/glacier_ft.tga");
+	
 	// OpenGL options
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glDepthFunc(GL_LESS);
 
 
 	// Setup and compile our shaders
@@ -100,6 +112,7 @@ int main()
 	Shader droneShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	Shader humanShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	Shader mortarShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
+	Shader skyBoxShader("res/shaders/skybox.vertex", "res/shaders/skybox.frag");
 
 	// Load models
 	Model house("res/models/env/Street_environment.obj");
@@ -115,8 +128,11 @@ int main()
 	mortar.loadModel("res/models/mortar/supermortar.obj");
 	mortar.setPos(0.0, 0, 7.0);
 
+	SkyBox skybox;
+	skybox.init(faces);
+
 	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 200.0f);
-	
+
 	// Game loop
 	while (!glfwWindowShouldClose(window))
 	{
@@ -133,7 +149,21 @@ int main()
 		// Clear the colorbuffer
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
+
+		//绘制天空盒
+		// 然后绘制包围盒  使包围盒原点位于观察者位置并使用缩放
+		glm::mat4 view_skybox = camera.GetViewMatrix();
+		skyBoxShader.Use();
+		//view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // 视变换矩阵 移除translate部分
+		glUniformMatrix4fv(glGetUniformLocation(skyBoxShader.Program, "projection"),
+			1, GL_FALSE, glm::value_ptr(projection));
+		glUniformMatrix4fv(glGetUniformLocation(skyBoxShader.Program, "view"),
+			1, GL_FALSE, glm::value_ptr(view_skybox));
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTextId());
+		glUniform1i(glGetUniformLocation(skyBoxShader.Program, "skybox"), 0);
+		skybox.draw(skyBoxShader);
+
 		//draw env
 		shader.Use();
 
@@ -181,23 +211,23 @@ int main()
 		glm::mat4 model_drone;
 		//todo 此处的运动逻辑还需要修改
 		GLdouble distance = sqrt((drone.getPosX() - human.getPosX())*(drone.getPosX() - human.getPosX())
-			+ (drone.getPosY() - human.getPosY()-3.0)*(drone.getPosY() - human.getPosY()-3.0)
+			+ (drone.getPosY() - human.getPosY() - 3.0)*(drone.getPosY() - human.getPosY() - 3.0)
 			+ (drone.getPosZ() - human.getPosZ())*(drone.getPosZ() - human.getPosZ()));
-	//	cout << "distance: " << distance << endl;
+		//	cout << "distance: " << distance << endl;
 		if (droneState == false) {
 			//cout << "falling down" << endl;
 			drone.falldown();
 		}
-		else if (drone.hasFound(human.getPosX(),human.getPosY(),human.getPosZ())||droneHasFound) {
+		else if (drone.hasFound(human.getPosX(), human.getPosY(), human.getPosZ()) || droneHasFound) {
 			//cout << "found target!"<<"dis in found "<<distance << endl;
 			droneHasFound = true;
-			drone.flyToPos(human.getPosX(), human.getPosY()+3.0, human.getPosZ(), 0);
+			drone.flyToPos(human.getPosX(), human.getPosY() + 3.0, human.getPosZ(), 0);
 			if (abs(distance) < 0.5)
-				droneState = false;			
+				droneState = false;
 		}
 		else {
 			//cout << "hit here!" << endl;
-			drone.searchInArea(-6.0f, 3.5f, -6.0f, 7.0f, 4.0f, 7.0f);			
+			drone.searchInArea(-6.0f, 3.5f, -6.0f, 7.0f, 4.0f, 7.0f);
 		}
 		//drone.falldown();
 		model_drone = glm::translate(model_drone, glm::vec3(drone.getPosX(), drone.getPosY(), drone.getPosZ())); // Translate it down a bit so it's at the center of the scene
@@ -229,14 +259,14 @@ int main()
 		//human.randomMoveWithLimit(0, 0, 4, 4);
 		//human.randomMoveToPoint(-4, 4);
 		human.staticMove();
-		
+
 		model_human = glm::translate(model_human, glm::vec3(human.getPosX(), human.getPosY(), human.getPosZ()));
-		model_human = glm::rotate(model_human, human.getRotateAngle(), glm::vec3(0, 1,0));
+		model_human = glm::rotate(model_human, human.getRotateAngle(), glm::vec3(0, 1, 0));
 		model_human = glm::translate(model_human, glm::vec3(0, 0, 0));
 		model_human = glm::scale(model_human, glm::vec3(0.15f, 0.15f, 0.15f));	// It's a bit too big for our scene, so scale it down
 		//model_human = glm::rotate(model_human, -45.228f, glm::vec3(0, 1, 0));
 
-		
+
 		glUniformMatrix4fv(glGetUniformLocation(humanShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model_human));
 		human.draw(humanShader);
 

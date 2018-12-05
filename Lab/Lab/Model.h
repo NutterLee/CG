@@ -159,6 +159,7 @@ private:
 			// Specular: texture_specularN
 			// Normal: texture_normalN
 
+			//cout << "run in model.h!" << endl;
 			// 1. Diffuse maps
 			vector<Texture> diffuseMaps = this->loadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
@@ -182,7 +183,7 @@ private:
 		{
 			aiString str;
 			mat->GetTexture(type, i, &str);
-
+			cout << "in load material textures, texture name:" << str.C_Str() << endl;
 			// Check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
 			GLboolean skip = false;
 
@@ -192,7 +193,6 @@ private:
 				{
 					textures.push_back(textures_loaded[j]);
 					skip = true; // A texture with the same filepath has already been loaded, continue to next one. (optimization)
-
 					break;
 				}
 			}
@@ -226,6 +226,7 @@ inline GLint TextureFromFile(const char *path, string directory)
 	int width, height;
 
 	unsigned char *image = SOIL_load_image(filename.c_str(), &width, &height, 0, SOIL_LOAD_RGB);
+	
 
 	// Assign texture to ID
 	glBindTexture(GL_TEXTURE_2D, textureID);

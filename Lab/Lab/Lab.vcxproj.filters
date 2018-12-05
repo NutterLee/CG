@@ -35,6 +35,9 @@
     <None Include="res\shaders\lighting.vs" />
     <None Include="res\shaders\modelLoading.vs" />
     <None Include="res\shaders\modelLoading.frag" />
+    <None Include="res\shaders\skybox.frag" />
+    <None Include="res\shaders\skybox.vertex" />
+    <None Include="glew32.dll" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -56,6 +59,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Mortar.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

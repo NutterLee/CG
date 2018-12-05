@@ -11,7 +11,7 @@ void Mortar::rotateToTarget(GLdouble _posX, GLdouble _posY, GLdouble _posZ)
 //	cout << "mortar info:" << endl;
 //	cout << "leftX " << leftX << "leftZ " << leftZ << endl;
 	//如果已经在正上方了就不转动了
-	if (abs(leftX) < 1.4|| abs(leftZ )< 1.4)
+	if (abs(leftX) < 1.0|| abs(leftZ )< 1.0)
 		return;
 	GLdouble tmpResult = leftX*1 + leftZ*0;
 	GLdouble tmpCos = tmpResult / (sqrt(leftX*leftX + leftZ*leftZ)*1);
@@ -30,7 +30,7 @@ void Mortar::rotateToTarget(GLdouble _posX, GLdouble _posY, GLdouble _posZ)
 	else if (rotateAngle < -360)
 		rotateAngle += 360;
 
-//	cout << "Mortar rotate angle: " << rotateAngle << endl;
+	//cout << "Mortar rotate angle: " << rotateAngle << endl;
 
 }
 
