@@ -52,6 +52,97 @@ glm::vec3 lightPos(1.2f, 8.0f, 2.0f);
 
 int main()
 {
+	GLfloat cubeVertices[] =
+	{
+		// Positions          // Texture Coords
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+		0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+		-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+		-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+	};
+
+	GLfloat skyboxVertices[] = {
+		// Positions
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		1.0f,  1.0f, -1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f
+	};
+
 	// Init GLFW
 	glfwInit();
 	// Set all the required options for GLFW
@@ -93,13 +184,6 @@ int main()
 	// Define the viewport dimensions
 	glViewport(10, 10, SCREEN_WIDTH, SCREEN_HEIGHT);
 
-	std::vector<const char*> faces;
-	faces.push_back("res/images/hw_glacier/glacier_rt.tga");
-	faces.push_back("res/images/hw_glacier/glacier_lf.tga");
-	faces.push_back("res/images/hw_glacier/glacier_up.tga");
-	faces.push_back("res/images/hw_glacier/glacier_dn.tga");
-	faces.push_back("res/images/hw_glacier/glacier_bk.tga");
-	faces.push_back("res/images/hw_glacier/glacier_ft.tga");
 	
 	// OpenGL options
 	glEnable(GL_DEPTH_TEST);
@@ -112,7 +196,30 @@ int main()
 	Shader droneShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	Shader humanShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	Shader mortarShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
-	Shader skyBoxShader("res/shaders/skybox.vertex", "res/shaders/skybox.frag");
+	Shader skyBoxShader("res/shaders/skybox.vs", "res/shaders/skybox.frag");
+
+
+	// Setup skybox VAO
+	GLuint skyboxVAO, skyboxVBO;
+	glGenVertexArrays(1, &skyboxVAO);
+	glGenBuffers(1, &skyboxVBO);
+	glBindVertexArray(skyboxVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
+	glBindVertexArray(0);
+
+
+	std::vector<const char*> faces;
+	faces.push_back("res/images/hw_glacier/glacier_rt.tga");
+	faces.push_back("res/images/hw_glacier/glacier_lf.tga");
+	faces.push_back("res/images/hw_glacier/glacier_up.tga");
+	faces.push_back("res/images/hw_glacier/glacier_dn.tga");
+	faces.push_back("res/images/hw_glacier/glacier_bk.tga");
+	faces.push_back("res/images/hw_glacier/glacier_ft.tga");
+	GLuint cubemapTexture = TextureLoading::LoadCubemap(faces);
+
 
 	// Load models
 	Model house("res/models/env/Street_environment.obj");
@@ -128,8 +235,8 @@ int main()
 	mortar.loadModel("res/models/mortar/supermortar.obj");
 	mortar.setPos(0.0, 0, 7.0);
 
-	SkyBox skybox;
-	skybox.init(faces);
+	//SkyBox skybox;
+	//skybox.init(faces);
 
 	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 200.0f);
 
@@ -152,17 +259,17 @@ int main()
 
 		//绘制天空盒
 		// 然后绘制包围盒  使包围盒原点位于观察者位置并使用缩放
-		glm::mat4 view_skybox = camera.GetViewMatrix();
-		skyBoxShader.Use();
-		//view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // 视变换矩阵 移除translate部分
-		glUniformMatrix4fv(glGetUniformLocation(skyBoxShader.Program, "projection"),
-			1, GL_FALSE, glm::value_ptr(projection));
-		glUniformMatrix4fv(glGetUniformLocation(skyBoxShader.Program, "view"),
-			1, GL_FALSE, glm::value_ptr(view_skybox));
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTextId());
-		glUniform1i(glGetUniformLocation(skyBoxShader.Program, "skybox"), 0);
-		skybox.draw(skyBoxShader);
+		//glm::mat4 view_skybox = glm::mat4(glm::mat3( camera.GetViewMatrix()));
+		//skyBoxShader.Use();
+		////view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // 视变换矩阵 移除translate部分
+		//glUniformMatrix4fv(glGetUniformLocation(skyBoxShader.Program, "projection"),
+		//	1, GL_FALSE, glm::value_ptr(projection));
+		//glUniformMatrix4fv(glGetUniformLocation(skyBoxShader.Program, "view"),
+		//	1, GL_FALSE, glm::value_ptr(view_skybox));
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTextId());
+		//glUniform1i(glGetUniformLocation(skyBoxShader.Program, "skybox"), 0);
+		//skybox.draw(skyBoxShader);
 
 		//draw env
 		shader.Use();
@@ -299,6 +406,23 @@ int main()
 		model_mortar = glm::scale(model_mortar, glm::vec3(0.005f, 0.005f, 0.005f));	// It's a bit too big for our scene, so scale it down
 		glUniformMatrix4fv(glGetUniformLocation(mortarShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model_mortar));
 		mortar.draw(mortarShader);
+
+
+		// Draw skybox as last
+		glDepthFunc(GL_LEQUAL);  // Change depth function so depth test passes when values are equal to depth buffer's content
+		skyBoxShader.Use();
+		view = glm::mat4(glm::mat3(camera.GetViewMatrix()));	// Remove any translation component of the view matrix
+
+		glUniformMatrix4fv(glGetUniformLocation(skyBoxShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
+		glUniformMatrix4fv(glGetUniformLocation(skyBoxShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+		// skybox cube
+		glBindVertexArray(skyboxVAO);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+		glDepthFunc(GL_LESS); // Set depth function back to default
+
 
 		// Swap the buffers
 		glfwSwapBuffers(window);

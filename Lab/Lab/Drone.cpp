@@ -1,11 +1,12 @@
 #include "Drone.h"
-std::default_random_engine generator;
-std::uniform_int_distribution<int> dis(-2, 2);
-std::uniform_int_distribution<int> escapeScale(5, 10);
-std::uniform_int_distribution<int> accDis(-10, 10);
+#include<ctime>
+static std::default_random_engine generator(time(0));
+static std::uniform_int_distribution<int> dis(-2, 2);
+static std::uniform_int_distribution<int> escapeScale(5, 10);
+static std::uniform_int_distribution<int> accDis(-10, 10);
 //生成的加速度不会太小
-std::uniform_int_distribution<int> accDis2(5, 10);
-std::uniform_int_distribution<int> randomData(-10, 10);
+static std::uniform_int_distribution<int> accDis2(5, 10);
+static std::uniform_int_distribution<int> randomData(-10, 10);
 
 void Drone::loadModel(string path)
 {
@@ -63,6 +64,7 @@ void Drone::reset()
 
 void Drone::changeAcc()
 {
+	generator.seed(time(0));
 	if (needChangeAcc()) {
 		accX = accDis(generator) / 10.0*maxAccX;
 		accY = accDis(generator) / 10.0*maxAccY;
