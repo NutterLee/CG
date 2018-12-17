@@ -139,6 +139,10 @@
     <None Include="res\shaders\lighting.vs" />
     <None Include="res\shaders\modelLoading.frag" />
     <None Include="res\shaders\modelLoading.vs" />
+    <None Include="res\shaders\shadow_mapping.frag" />
+    <None Include="res\shaders\shadow_mapping.vs" />
+    <None Include="res\shaders\shadow_mapping_depth.frag" />
+    <None Include="res\shaders\shadow_mapping_depth.vs" />
     <None Include="res\shaders\skybox.frag" />
     <None Include="res\shaders\skybox.vs" />
   </ItemGroup>

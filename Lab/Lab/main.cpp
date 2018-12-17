@@ -197,6 +197,10 @@ int main()
 	Shader humanShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	Shader mortarShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	Shader skyBoxShader("res/shaders/skybox.vs", "res/shaders/skybox.frag");
+	Shader shadowShader("res/shaders/shadow_mapping.vs", "res/shaders/shadow_mapping.frag");
+	Shader simpleDepthShader("res/shaders/shadow_mapping_depth.vs", "res/shaders/shadow_mapping_depth.frag");
+
+
 
 
 	// Setup skybox VAO

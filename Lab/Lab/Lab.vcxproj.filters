@@ -38,6 +38,10 @@
     <None Include="res\shaders\skybox.frag" />
     <None Include="glew32.dll" />
     <None Include="res\shaders\skybox.vs" />
+    <None Include="res\shaders\shadow_mapping.frag" />
+    <None Include="res\shaders\shadow_mapping.vs" />
+    <None Include="res\shaders\shadow_mapping_depth.frag" />
+    <None Include="res\shaders\shadow_mapping_depth.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
