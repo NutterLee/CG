@@ -6,10 +6,12 @@ TODO LIST (new)
 2. 场景的纹理贴图？？？  
 3. 飞行器的随机策略，随机种子要设置一下  
 4. 飞行器的纹理  
-5. 天空盒  
+5. 天空盒  （位置不对）
 6. 叙事场景可以更复杂一点  
 7. 阴影效果  
 8. 人物走动的策略  
+
+shadow mapping的教程：https://learnopengl-cn.readthedocs.io/zh/latest/05%20Advanced%20Lighting/03%20Shadows/01%20Shadow%20Mapping/
 
 
 ====================分割线======================
