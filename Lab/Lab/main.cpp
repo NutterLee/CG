@@ -192,8 +192,10 @@ int main()
 
 
 	// Setup and compile our shaders
-	Shader shader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
-	Shader droneShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
+	//Shader shader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
+	Shader shader("res/shaders/droneShader.vs", "res/shaders/droneShader.frag");
+	//Shader droneShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
+	Shader droneShader("res/shaders/droneShader.vs", "res/shaders/droneShader.frag");
 	Shader humanShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	Shader mortarShader("res/shaders/modelLoading.vs", "res/shaders/modelLoading.frag");
 	Shader skyBoxShader("res/shaders/skybox.vs", "res/shaders/skybox.frag");
@@ -201,6 +203,33 @@ int main()
 	Shader simpleDepthShader("res/shaders/shadow_mapping_depth.vs", "res/shaders/shadow_mapping_depth.frag");
 
 
+	// configure depth map FBO
+	// -----------------------
+	const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+	unsigned int depthMapFBO;
+	glGenFramebuffers(1, &depthMapFBO);
+	// create depth texture
+	unsigned int depthMap;
+	glGenTextures(1, &depthMap);
+	glBindTexture(GL_TEXTURE_2D, depthMap);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	float borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	// attach depth texture as FBO's depth buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//configure shadow shader
+	shadowShader.Use();
+	shadowShader.setInt("diffuseTexture", 0);
+	shadowShader.setInt("shadowMap", 1);
 
 
 	// Setup skybox VAO
@@ -213,20 +242,26 @@ int main()
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
 	glBindVertexArray(0);
-
-
+		
 	std::vector<const char*> faces;
-	faces.push_back("res/images/hw_glacier/glacier_rt.tga");
-	faces.push_back("res/images/hw_glacier/glacier_lf.tga");
-	faces.push_back("res/images/hw_glacier/glacier_up.tga");
-	faces.push_back("res/images/hw_glacier/glacier_dn.tga");
-	faces.push_back("res/images/hw_glacier/glacier_bk.tga");
-	faces.push_back("res/images/hw_glacier/glacier_ft.tga");
+	//faces.push_back("res/images/hw_glacier/glacier_rt.tga");
+	//faces.push_back("res/images/hw_glacier/glacier_lf.tga");
+	//faces.push_back("res/images/hw_glacier/glacier_up.tga");
+	//faces.push_back("res/images/hw_glacier/glacier_dn.tga");
+	//faces.push_back("res/images/hw_glacier/glacier_bk.tga");
+	//faces.push_back("res/images/hw_glacier/glacier_ft.tga");
+	faces.push_back("res/images/mp_deviltooth/devils-tooth_rt.tga");
+	faces.push_back("res/images/mp_deviltooth/devils-tooth_lf.tga");
+	faces.push_back("res/images/mp_deviltooth/devils-tooth_up.tga");
+	faces.push_back("res/images/mp_deviltooth/devils-tooth_dn.tga");
+	faces.push_back("res/images/mp_deviltooth/devils-tooth_bk.tga");
+	faces.push_back("res/images/mp_deviltooth/devils-tooth_ft.tga");
 	GLuint cubemapTexture = TextureLoading::LoadCubemap(faces);
 
 
 	// Load models
-	Model house("res/models/env/Street_environment.obj");
+	//Model house("res/models/env/Street_environment.obj");
+	Model house("res/models/Small Tropical Island/Small Tropical Island.obj");
 	Drone drone;
 	drone.loadModel("res/models/drone/Drone.obj");
 	drone.setPos(-5, 5, -5);
@@ -239,8 +274,7 @@ int main()
 	mortar.loadModel("res/models/mortar/supermortar.obj");
 	mortar.setPos(0.0, 0, 7.0);
 
-	//SkyBox skybox;
-	//skybox.init(faces);
+
 
 	glm::mat4 projection = glm::perspective(camera.GetZoom(), (float)SCREEN_WIDTH / (float)SCREEN_HEIGHT, 0.1f, 200.0f);
 
@@ -261,20 +295,33 @@ int main()
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		//绘制天空盒
-		// 然后绘制包围盒  使包围盒原点位于观察者位置并使用缩放
-		//glm::mat4 view_skybox = glm::mat4(glm::mat3( camera.GetViewMatrix()));
-		//skyBoxShader.Use();
-		////view = glm::mat4(glm::mat3(camera.GetViewMatrix())); // 视变换矩阵 移除translate部分
-		//glUniformMatrix4fv(glGetUniformLocation(skyBoxShader.Program, "projection"),
-		//	1, GL_FALSE, glm::value_ptr(projection));
-		//glUniformMatrix4fv(glGetUniformLocation(skyBoxShader.Program, "view"),
-		//	1, GL_FALSE, glm::value_ptr(view_skybox));
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.getTextId());
-		//glUniform1i(glGetUniformLocation(skyBoxShader.Program, "skybox"), 0);
-		//skybox.draw(skyBoxShader);
+		/*todo!!!!
+		//
+		// 1. render depth of scene to texture (from light's perspective)
+		// --------------------------------------------------------------
+		glm::mat4 lightProjection, lightView;
+		glm::mat4 lightSpaceMatrix;
+		float near_plane = 1.0f, far_plane = 7.5f;
+		//lightProjection = glm::perspective(glm::radians(45.0f), (GLfloat)SHADOW_WIDTH / (GLfloat)SHADOW_HEIGHT, near_plane, far_plane); // note that if you use a perspective projection matrix you'll have to change the light position as the current light position isn't enough to reflect the whole scene
+		lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane);
+		lightView = glm::lookAt(lightPos, glm::vec3(0.0f), glm::vec3(0.0, 1.0, 0.0));
+		lightSpaceMatrix = lightProjection * lightView;
+		// render scene from light's point of view
+		simpleDepthShader.Use();
+		simpleDepthShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
+		glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		glActiveTexture(GL_TEXTURE0);
+		//todo render model here use simple depth shader ???
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		//reset viewport
+		glViewport(10, 10, SCREEN_WIDTH, SCREEN_HEIGHT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		 */
+		//----------------
 		//draw env
 		shader.Use();
 
@@ -295,8 +342,9 @@ int main()
 
 		// Draw the loaded model
 		glm::mat4 model;
-		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f)); // Translate it down a bit so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(0.9f, 0.59f, 0.9f));	// It's a bit too big for our scene, so scale it down
+		model = glm::translate(model, glm::vec3(15.0f, -6.75f, -16.0f)); // Translate it down a bit so it's at the center of the scene
+		//model = glm::scale(model, glm::vec3(0.9f, 0.59f, 0.9f));	// It's a bit too big for our scene, so scale it down
+		model = glm::scale(model, glm::vec3(0.10f, 0.10f, 0.10f));	// It's a bit too big for our scene, so scale it down
 		glUniformMatrix4fv(glGetUniformLocation(shader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		house.Draw(shader);
 

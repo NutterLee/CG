@@ -133,6 +133,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="glew32.dll" />
+    <None Include="res\shaders\droneShader.frag" />
+    <None Include="res\shaders\droneShader.vs" />
     <None Include="res\shaders\lamp.frag" />
     <None Include="res\shaders\lamp.vs" />
     <None Include="res\shaders\lighting.frag" />

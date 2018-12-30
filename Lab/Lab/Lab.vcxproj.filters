@@ -42,6 +42,8 @@
     <None Include="res\shaders\shadow_mapping.vs" />
     <None Include="res\shaders\shadow_mapping_depth.frag" />
     <None Include="res\shaders\shadow_mapping_depth.vs" />
+    <None Include="res\shaders\droneShader.frag" />
+    <None Include="res\shaders\droneShader.vs" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">

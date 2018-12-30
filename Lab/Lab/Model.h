@@ -183,7 +183,7 @@ private:
 		{
 			aiString str;
 			mat->GetTexture(type, i, &str);
-			cout << "in load material textures, texture name:" << str.C_Str() << endl;
+			//cout << "in load material textures, texture name:" << str.C_Str() << endl;
 			// Check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
 			GLboolean skip = false;
 
